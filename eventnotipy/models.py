@@ -5,6 +5,7 @@ class EventsNotificationRecipients(db.Model):
     __tablename__ = 'events_notification_recipients'
 
     notification_id = db.Column(TINYINT(11), primary_key=True)
+    event_id = db.Column(db.Integer)
     recipient_name = db.Column(db.String)
     recipient_email = db.Column(db.String)
     recipient_phone = db.Column(db.Integer, primary_key=True)
