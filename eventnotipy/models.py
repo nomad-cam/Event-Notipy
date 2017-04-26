@@ -7,12 +7,12 @@ class EventsNotificationRecipients(db.Model):
     notification_id = db.Column(TINYINT(11), primary_key=True)
     recipient_name = db.Column(db.String)
     recipient_email = db.Column(db.String)
-    recipient_phone = db.Column(db.Integer(11), primary_key=True)
+    recipient_phone = db.Column(db.Integer, primary_key=True)
 
 class EventsNotificationData(db.Model):
     __tablename__ = 'events_notification_data'
 
-    notification_id = db.Column(db.Integer(11), primary_key=True)
+    notification_id = db.Column(db.Integer, primary_key=True)
     notify_reporter_id = db.Column(TINYINT(11))
     notify_title = db.Column(db.Text)
     notify_submitted = db.Column(TINYINT(11))
@@ -28,7 +28,7 @@ class EventsNotificationData(db.Model):
 class EventsNotificationConditions(db.Model):
     __tablename__ = 'events_notification_conditions_data'
 
-    condition_id = db.Column(db.Integer(11), primary_key=True)
+    condition_id = db.Column(db.Integer, primary_key=True)
     condition_name = db.Column(db.Text)
     condition_operators = db.Column(db.Text)
 
