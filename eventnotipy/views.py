@@ -32,6 +32,7 @@ def on_change(change_type):
                 print('Notification Active! Checking for recipients...')
 
                 recipient_data = EventsNotificationRecipients.query.filter_by(event_id=notify_id).all()
+                # print(recipient_data.count())
 
                 for person in recipient_data:
                     print(person.recipient_name)
