@@ -5,7 +5,7 @@ from eventnotipy import app
 def hello_world():
     return 'Access Denied!'
 
-@app.route('/event/<change_type>')
-def on_change(change_type):
+@app.route('/event/<change_type>/<event_id>/')
+def on_change(change_type,event_id):
     return 'Event Changed: %s' % change_type
 
