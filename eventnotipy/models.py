@@ -5,25 +5,26 @@ class EventsNotificationRecipients(db.Model):
     __tablename__ = 'events_notification_recipients'
 
     notification_id = db.Column(TINYINT(11), primary_key=True)
-    event_id = db.Column(db.Integer)
+    type_id = db.Column(db.Integer, primary_key=True)
     recipient_name = db.Column(db.String)
     recipient_email = db.Column(db.String)
-    recipient_phone = db.Column(db.Integer, primary_key=True)
+    recipient_phone = db.Column(db.Integer)
 
 class EventsNotificationData(db.Model):
     __tablename__ = 'events_notification_data'
 
-    notification_id = db.Column(db.Integer, primary_key=True)
+    notify_id = db.Column(db.Integer, primary_key=True)
+    notify_type = db.Column(db.Integer)
     notify_reporter_id = db.Column(TINYINT(11))
     notify_title = db.Column(db.Text)
     notify_submitted = db.Column(TINYINT(11))
-    notification_updated = db.Column(TINYINT(11))
-    notification_mode = db.Column(TINYINT(11))
-    notification_message = db.Column(db.Text)
-    notification_date_added = db.Column(db.DateTime)
-    notification_date_modified = db.Column(db.DateTime)
-    notification_date_deleted = db.Column(db.DateTime)
-    notification_active = db.Column(TINYINT(11))
+    notify_updated = db.Column(TINYINT(11))
+    notify_mode = db.Column(TINYINT(11))
+    notify_message = db.Column(db.Text)
+    notify_date_added = db.Column(db.DateTime)
+    notify_date_modified = db.Column(db.DateTime)
+    notify_date_deleted = db.Column(db.DateTime)
+    notify_active = db.Column(TINYINT(11))
 
 
 class EventsNotificationConditions(db.Model):
