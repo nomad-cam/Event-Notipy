@@ -1,8 +1,8 @@
 from flask import request,jsonify
 from eventnotipy import app
-from eventnotipy.database import db
 from eventnotipy.models import EventsNotificationConditions,EventsNotificationData,\
                                EventsNotificationRecipients,EventsNotificationRules
+
 
 @app.route('/')
 def hello_world():
@@ -27,11 +27,12 @@ def on_change(change_type):
             print('Processing a notify_id action')
             print(notify_id)
 
-            notify_data = EventsNotificationData.query.filter_by(notification_id=notify_id).first()
-            if notify_data.notification_active:
+            notify_data = EventsNotificationData.query.filter_by(notify_id=notify_id).first()
+            # print(notify_data)
+            if notify_data.notify_active:
                 print('Notification Active! Checking for recipients...')
 
-                recipient_data = EventsNotificationRecipients.query.filter_by(event_id=notify_id).all()
+                recipient_data = EventsNotificationRecipients.query.filter_by(notification_id=notify_id).all()
                 # print(recipient_data.count())
 
                 for person in recipient_data:
