@@ -42,3 +42,29 @@ class EventsNotificationRules(db.Model):
     rule_condition = db.Column(db.Text)
     rule_operator = db.Column(db.Text)
     rule_value = db.Column(db.Text)
+
+
+class EventsData(db.model):
+    __tablename__ = 'events_data'
+
+    event_id = db.Column(db.Integer,autoincrement=True,primary_key=True)
+    reported_by = db.Column(db.Integer)
+    start_date = db.Column(db.DateTime)
+    end_date = db.Column(db.DateTime)
+    group_id = db.Column(TINYINT(3))
+    impact = db.Column(TINYINT(3))
+    system = db.Column(db.Integer)
+    sub_system = db.Column(db.Text)
+    title = db.Column(db.Text)
+    contributors = db.Column(db.Text)
+    description = db.Column(db.Text)
+    resolution = db.Column(db.Text)
+    actions = db.Column(db.Text)
+    status = db.Column(TINYINT(3))
+    linked_content = db.Column(TINYINT(3))
+    on_call = db.Column(db.Text)
+    beam_mode = db.Column(TINYINT(3))
+    notify = db.Column(db.Integer)
+    elog = db.Column(db.Integer)
+    elog_id = db.Column(db.Integer)
+    deleted = db.Column(db.Integer)
