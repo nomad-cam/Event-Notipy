@@ -8,8 +8,8 @@ from eventnotipy.models import EventsNotificationConditions,EventsNotificationDa
 def hello_world():
     return 'Access Denied!'
 
-@app.route('/event/<change_type>/', methods=['GET','POST'])
-def on_change(change_type):
+@app.route('/event/<change_type>/<int:event_id>', methods=['GET','POST'])
+def on_change(change_type,event_id):
     if request.method == 'POST':
         print(request.form)
 
@@ -18,13 +18,13 @@ def on_change(change_type):
         notify_id = request.values.get('notify_id')
 
         # if an event id find any actions with required event
+        # if event_id:
+        #     print('Processing an event_id action')
+        #     print(event_id)
+        #
+        #     return jsonify(event_id)
+
         if event_id:
-            print('Processing an event_id action')
-            print(event_id)
-
-            return jsonify(event_id)
-
-        elif notify_id:
             print('Processing a notify_id action')
             print(notify_id)
 
