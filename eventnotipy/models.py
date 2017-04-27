@@ -44,7 +44,7 @@ class EventsNotificationRules(db.Model):
     rule_value = db.Column(db.Text)
 
 
-class EventsData(db.model):
+class EventsData(db.Model):
     __tablename__ = 'events_data'
 
     event_id = db.Column(db.Integer,autoincrement=True,primary_key=True)
