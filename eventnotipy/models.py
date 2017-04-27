@@ -13,7 +13,7 @@ class EventsNotificationRecipients(db.Model):
 class EventsNotificationData(db.Model):
     __tablename__ = 'events_notification_data'
 
-    notify_id = db.Column(db.Integer, primary_key=True)
+    notify_id = db.Column(db.Integer, db.ForeignKey('events_notification_rules.notification_id'), primary_key=True)
     notify_type = db.Column(db.Integer)
     notify_reporter_id = db.Column(TINYINT(11))
     notify_title = db.Column(db.Text)
@@ -26,6 +26,19 @@ class EventsNotificationData(db.Model):
     notify_date_deleted = db.Column(db.DateTime)
     notify_active = db.Column(TINYINT(11))
 
+    rules = db.relationship('EventsNotificationRules')
+
+
+class EventsNotificationRules(db.Model):
+    __tablename__ = 'events_notification_rules'
+
+    notification_id = db.Column(TINYINT(11), primary_key=True)
+    rule_condition = db.Column(db.Integer, db.ForeignKey('events_notification_conditions_data.condition_id'))
+    rule_operator = db.Column(db.Text)
+    rule_value = db.Column(db.Text)
+
+    conditions = db.relationship('EventsNotificationConditions')
+
 
 class EventsNotificationConditions(db.Model):
     __tablename__ = 'events_notification_conditions_data'
@@ -34,14 +47,8 @@ class EventsNotificationConditions(db.Model):
     condition_name = db.Column(db.Text)
     condition_operators = db.Column(db.Text)
 
+    rules = db.relationship(EventsNotificationRules)
 
-class EventsNotificationRules(db.Model):
-    __tablename__ = 'events_notification_rules'
-
-    notification_id = db.Column(TINYINT(11), primary_key=True)
-    rule_condition = db.Column(db.Text)
-    rule_operator = db.Column(db.Text)
-    rule_value = db.Column(db.Text)
 
 
 class EventsData(db.Model):
