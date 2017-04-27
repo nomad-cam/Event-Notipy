@@ -11,6 +11,7 @@ def hello_world():
 @app.route('/event/<change_type>/', methods=['GET','POST'])
 def on_change(change_type):
     if request.method == 'POST':
+        print(request.form)
 
         # fetch the POST'ed values, default to None if not available
         event_id = request.values.get('event_id')
