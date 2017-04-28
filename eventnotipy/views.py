@@ -111,6 +111,7 @@ def on_change(change_type,event_id):
 
 
                 print('The following notifications were matched:')
+                # notify list contains the notify_ids of the matched rules...
                 print(notify_list)
 
             return jsonify(event_id)
