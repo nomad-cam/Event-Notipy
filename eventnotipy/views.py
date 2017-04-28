@@ -65,7 +65,8 @@ def on_change(change_type,event_id):
                     # check for matches against Group
                     if dict_cond['condition_id'] == 1:
                         group = ElogGroupData.query.filter_by(group_id=events_data.group_id).first()
-                        # print(dict_rules['rule_value'],group.group_title)
+                        print('Trying to determine the operator')
+                        print(group.group_title,dict_rules['rule_value'])
                         if dict_rules['rule_operator'] == 'EQ':
                             # equal condition
                             if dict_rules['rule_value'] == group.group_title:
@@ -79,8 +80,6 @@ def on_change(change_type,event_id):
                         else:
                             print('Found a Group Match, but could not determine the operator')
 
-                         # clear the group variable
-                        # group = None
 
                     # check for matches against System
                     elif dict_cond['condition_id'] == 2:
@@ -94,6 +93,7 @@ def on_change(change_type,event_id):
                     # check for matches against Beam Mode
                     elif dict_cond['condition_id'] == 5:
                         mode = ElogBeamModeData.query.filter_by(beam_mode_id=events_data.beam_mode).first()
+                        print('Trying to determine the operator')
                         if dict_rules['rule_operator'] == 'EQ':
                             # equal condition
                             if dict_rules['rule_value'] == mode.beam_mode_id:
@@ -107,7 +107,7 @@ def on_change(change_type,event_id):
                         else:
                             print('Found a Beam Mode Match, but could not determine the Operator')
                     else:
-                        print('No Match')
+                        print('No Matchs Found')
 
 
                 print('The following notifications were matched:')
