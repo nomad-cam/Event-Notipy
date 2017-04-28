@@ -3,8 +3,10 @@ from eventnotipy import app
 from eventnotipy.models import db
 from eventnotipy.models import EventsNotificationConditions,EventsNotificationData,\
                                EventsNotificationRecipients,EventsNotificationRules,\
-                               EventsData
+                               EventsData,\
+                               ElogGroupData,ElogBeamModeData
 import pprint
+from sqlalchemy import and_
 
 pp = pprint.PrettyPrinter(indent=4)
 
@@ -31,24 +33,85 @@ def on_change(change_type,event_id):
         if event_id:
             print('Processing a notify_id action')
 
-            events_data = EventsData.query.filter_by(event_id=event_id).first()
+            print(event_id)
+            events_data = db.session.query(EventsData).filter(EventsData.event_id==event_id).first()
+            # pp.pprint(events_data.__dict__)
 
             # if the event can be found continue...
             if events_data:
                 print('Event Recieved! Checking for active notifications...')
 
                 # data = EventsNotificationRules.query.all()
-                data = db.session.query(EventsNotificationRules,EventsNotificationConditions,EventsNotificationData)\
-                                           .join(EventsNotificationConditions, EventsNotificationConditions.condition_id == EventsNotificationRules.rule_condition)\
-                                           .join(EventsNotificationData, EventsNotificationData.notify_id == EventsNotificationRules.notification_id) \
-                                           .all()
+                data = db.session.query(EventsNotificationRules,EventsNotificationConditions,EventsNotificationData,EventsNotificationRecipients)\
+                                .join(EventsNotificationConditions, EventsNotificationConditions.condition_id == EventsNotificationRules.rule_condition)\
+                                .join(EventsNotificationData, EventsNotificationData.notify_id == EventsNotificationRules.notification_id) \
+                                .join(EventsNotificationRecipients, EventsNotificationRecipients.notification_id == EventsNotificationData.notify_id) \
+                                .filter(EventsNotificationData.deleted == 0) \
+                                .all()
 
-                for rules,conditions,nData in data:
+                notify_list = []
+                for rules,conditions,nData,recipients in data:
 
-                    print(rules.__dict__)
-                    print(conditions.__dict__)
-                    print(nData.__dict__)
+                    dict_rules = dict(rules.__dict__);dict_rules.pop('_sa_instance_state',None)
+                    dict_cond = dict(conditions.__dict__);dict_cond.pop('_sa_instance_state',None)
+                    dict_data = dict(nData.__dict__);dict_data.pop('_sa_instance_state',None)
+                    dict_recipients = dict(recipients.__dict__);dict_recipients.pop('_sa_instance_state',None)
+                    print(dict_rules)
+                    print(dict_cond)
+                    print(dict_data)
+                    print(dict_recipients)
 
+
+                    # check for matches against Group
+                    if dict_cond['condition_id'] == 1:
+                        group = ElogGroupData.query.filter_by(group_id=events_data.group_id).first()
+                        # print(dict_rules['rule_value'],group.group_title)
+                        if dict_rules['rule_operator'] == 'EQ':
+                            # equal condition
+                            if dict_rules['rule_value'] == group.group_title:
+                                print('Found a Group Match [Equal]: %s') % dict_rules['rule_value']
+                                notify_list.append(dict_data['notify_id'])
+                        elif dict_rules['rule_operator'] == 'NE':
+                            # not equal condition
+                            if dict_rules['rule_value'] != group.group_title:
+                                print('Found a Group Match [Not Equal]: %s') % dict_rules['rule_value']
+                                notify_list.append(dict_data['notify_id'])
+                        else:
+                            print('Found a Group Match, but could not determine the operator')
+
+                         # clear the group variable
+                        # group = None
+
+                    # check for matches against System
+                    elif dict_cond['condition_id'] == 2:
+                        print('Found a System Match')
+                    # check for matches against Status
+                    elif dict_cond['condition_id'] == 3:
+                        print('Found a Status Match')
+                    # check for matches against Impact
+                    elif dict_cond['condition_id'] == 4:
+                        print('Found an Impact Match')
+                    # check for matches against Beam Mode
+                    elif dict_cond['condition_id'] == 5:
+                        mode = ElogBeamModeData.query.filter_by(beam_mode_id=events_data.beam_mode).first()
+                        if dict_rules['rule_operator'] == 'EQ':
+                            # equal condition
+                            if dict_rules['rule_value'] == mode.beam_mode_id:
+                                print('Found a Beam Mode Match [Equal]: %s') % dict_rules['rule_value']
+                                notify_list.append(dict_data['notify_id'])
+                        elif dict_rules['rule_operator'] == 'NE':
+                            # not equal condition
+                            if dict_rules['rule_value'] != mode.beam_mode_id:
+                                print('Found a Beam Mode Match [Not Equal]: %s') % dict_rules['rule_value']
+                                notify_list.append(dict_data['notify_id'])
+                        else:
+                            print('Found a Beam Mode Match, but could not determine the Operator')
+                    else:
+                        print('No Match')
+
+
+                print('The following notifications were matched:')
+                print(notify_list)
 
             return jsonify(event_id)
 

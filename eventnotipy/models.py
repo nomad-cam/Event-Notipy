@@ -13,7 +13,8 @@ class EventsNotificationRecipients(db.Model):
 class EventsNotificationData(db.Model):
     __tablename__ = 'events_notification_data'
 
-    notify_id = db.Column(db.Integer, db.ForeignKey('events_notification_rules.notification_id'), primary_key=True)
+    notify_id = db.Column(db.Integer, db.ForeignKey('events_notification_rules.notification_id'),
+                          db.ForeignKey('events_notification_recipients.notification_id'), primary_key=True)
     notify_type = db.Column(db.Integer)
     notify_reporter_id = db.Column(TINYINT(11))
     notify_title = db.Column(db.Text)
@@ -25,6 +26,7 @@ class EventsNotificationData(db.Model):
     notify_date_modified = db.Column(db.DateTime)
     notify_date_deleted = db.Column(db.DateTime)
     notify_active = db.Column(TINYINT(11))
+    deleted = db.Column(db.Integer)
 
     rules = db.relationship('EventsNotificationRules')
 
@@ -58,7 +60,7 @@ class EventsData(db.Model):
     reported_by = db.Column(db.Integer)
     start_date = db.Column(db.DateTime)
     end_date = db.Column(db.DateTime)
-    group_id = db.Column(TINYINT(3))
+    group_id = db.Column(TINYINT(3), db.ForeignKey('elog_group_data.group_id'))
     impact = db.Column(TINYINT(3))
     system = db.Column(db.Integer)
     sub_system = db.Column(db.Text)
@@ -75,3 +77,22 @@ class EventsData(db.Model):
     elog = db.Column(db.Integer)
     elog_id = db.Column(db.Integer)
     deleted = db.Column(db.Integer)
+
+
+class ElogGroupData(db.Model):
+    __tablename__ = 'elog_group_data'
+
+    group_id = db.Column(TINYINT(3),primary_key=True)
+    group_title = db.Column(db.Text)
+    group_type = db.Column(TINYINT(1), primary_key=True)
+    sort = db.Column(db.SmallInteger, primary_key=True)
+    private = db.Column(TINYINT(1), primary_key=True)
+    urlName = db.Column(db.Text)
+    oncall = db.Column(db.Integer, primary_key=True)
+    ldap_group_name = db.Column(db.Text)
+
+class ElogBeamModeData(db.Model):
+    __tablename__ = 'elog_beam_mode_data'
+
+    beam_mode_id = db.Column(TINYINT(3),primary_key=True)
+    beam_mode_title = db.Column(db.Text)
