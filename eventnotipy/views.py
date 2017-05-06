@@ -21,7 +21,7 @@ def on_change(change_type,event_id):
 
         # fetch the POST'ed values, default to None if not available
         # event_id = request.values.get('event_id')
-        notify_id = request.values.get('notify_id')
+        # notify_id = request.values.get('notify_id')
 
         # if an event id find any actions with required event
         # if event_id:
