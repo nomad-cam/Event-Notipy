@@ -3,10 +3,9 @@ from eventnotipy import app
 from eventnotipy.models import db
 from eventnotipy.models import EventsNotificationConditions,EventsNotificationData,\
                                EventsNotificationRecipients,EventsNotificationRules,\
-                               EventsData,\
+                               EventsData,EventsImpactData,EventsStatusData,EventsSystemData,\
                                ElogGroupData,ElogBeamModeData
 import pprint
-from sqlalchemy import and_
 
 pp = pprint.PrettyPrinter(indent=4)
 
@@ -66,7 +65,7 @@ def on_change(change_type,event_id):
                     if dict_cond['condition_id'] == 1:
                         group = ElogGroupData.query.filter_by(group_id=events_data.group_id).first()
                         print('Trying to determine the operator')
-                        print(group.group_title,dict_rules['rule_value'])
+                        # print(group.group_title,dict_rules['rule_value'])
                         if dict_rules['rule_operator'] == 'EQ':
                             # equal condition
                             if dict_rules['rule_value'] == group.group_title:
@@ -84,12 +83,60 @@ def on_change(change_type,event_id):
                     # check for matches against System
                     elif dict_cond['condition_id'] == 2:
                         print('Found a System Match')
+                        system =EventsSystemData.query.filter_by(system_id=events_data.system)
+                        print('Trying to determine the operator')
+                        if dict_rules['rule_operator'] == 'EQ':
+                            # equal condition
+                            if dict_rules['rule_value'] == system.system_id:
+                                print('Found a System Match [Equal]: %s') % dict_rules['rule_value']
+                                notify_list.append(dict_data['notify_id'])
+                        elif dict_rules['rule_operator'] == 'NE':
+                            # not equal condition
+                            if dict_rules['rule_value'] == system.system_id:
+                                print('Found a System Match [Not Equal]: %s') % dict_rules['rule_value']
+                                notify_list.append(dict_data['notify_id'])
+                        else:
+                            print('Found a System Match, but could not determine the operator')
+
+
                     # check for matches against Status
                     elif dict_cond['condition_id'] == 3:
                         print('Found a Status Match')
+                        status = EventsStatusData.query.filter_by(status_id=events_data.status)
+                        print('Trying to determine the operator')
+                        if dict_rules['rule_operator'] == 'EQ':
+                            # equal condition
+                            if dict_rules['rule_value'] == status.status_id:
+                                print('Found a System Match [Equal]: %s') % dict_rules['rule_value']
+                                notify_list.append(dict_data['notify_id'])
+                        elif dict_rules['rule_operator'] == 'NE':
+                            # not equal condition
+                            if dict_rules['rule_value'] == status.status_id:
+                                print('Found a System Match [Not Equal]: %s') % dict_rules['rule_value']
+                                notify_list.append(dict_data['notify_id'])
+                        else:
+                            print('Found a System Match, but could not determine the operator')
+
+
                     # check for matches against Impact
                     elif dict_cond['condition_id'] == 4:
                         print('Found an Impact Match')
+                        impact = EventsImpactData.query.filter_by(impact_id=events_data.impact)
+                        print('Trying to determine the operator')
+                        if dict_rules['rule_operator'] == 'EQ':
+                            # equal condition
+                            if dict_rules['rule_value'] == impact.impact_id:
+                                print('Found a System Match [Equal]: %s') % dict_rules['rule_value']
+                                notify_list.append(dict_data['notify_id'])
+                        elif dict_rules['rule_operator'] == 'NE':
+                            # not equal condition
+                            if dict_rules['rule_value'] == impact.impact_id:
+                                print('Found a System Match [Not Equal]: %s') % dict_rules['rule_value']
+                                notify_list.append(dict_data['notify_id'])
+                        else:
+                            print('Found a System Match, but could not determine the operator')
+
+
                     # check for matches against Beam Mode
                     elif dict_cond['condition_id'] == 5:
                         mode = ElogBeamModeData.query.filter_by(beam_mode_id=events_data.beam_mode).first()
@@ -107,7 +154,7 @@ def on_change(change_type,event_id):
                         else:
                             print('Found a Beam Mode Match, but could not determine the Operator')
                     else:
-                        print('No Matchs Found')
+                        print('No Matches Found')
 
 
                 print('The following notifications were matched:')
