@@ -1,10 +1,11 @@
 from flask import request,jsonify
 from eventnotipy import app
 from eventnotipy.models import db
-from eventnotipy.models import EventsNotificationConditions,EventsNotificationData,\
-                               EventsNotificationRecipients,EventsNotificationRules,\
-                               EventsData,EventsImpactData,EventsStatusData,EventsSystemData,\
-                               ElogGroupData,ElogBeamModeData
+from eventnotipy.models import EventsNotificationConditions,EventsNotificationData, \
+                               EventsNotificationRecipients,EventsNotificationRules, \
+                               EventsData,EventsImpactData,EventsStatusData,EventsSystemData, \
+                               EventsBeamModeData, \
+                               ElogGroupData
 import pprint
 
 pp = pprint.PrettyPrinter(indent=4)
@@ -125,12 +126,12 @@ def on_change(change_type,event_id):
                         print('Trying to determine the operator')
                         if dict_rules['rule_operator'] == 'EQ':
                             # equal condition
-                            if dict_rules['rule_value'] == impact.impact_id:
+                            if dict_rules['rule_value'] == impact.impact_name:
                                 print('Found a System Match [Equal]: %s') % dict_rules['rule_value']
                                 notify_list.append(dict_data['notify_id'])
                         elif dict_rules['rule_operator'] == 'NE':
                             # not equal condition
-                            if dict_rules['rule_value'] == impact.impact_id:
+                            if dict_rules['rule_value'] == impact.impact_name:
                                 print('Found a System Match [Not Equal]: %s') % dict_rules['rule_value']
                                 notify_list.append(dict_data['notify_id'])
                         else:
@@ -139,7 +140,7 @@ def on_change(change_type,event_id):
 
                     # check for matches against Beam Mode
                     elif dict_cond['condition_id'] == 5:
-                        mode = ElogBeamModeData.query.filter_by(beam_mode_id=events_data.beam_mode).first()
+                        mode = EventsBeamModeData.query.filter_by(beam_mode_id=events_data.beam_mode).first()
                         print('Trying to determine the operator')
                         if dict_rules['rule_operator'] == 'EQ':
                             # equal condition

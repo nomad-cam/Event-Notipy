@@ -102,6 +102,13 @@ class EventsSystemData(db.Model):
     system_category = db.Column(db.Integer)
 
 
+class EventsBeamModeData(db.Model):
+    __tablename__ = 'events_beam_mode_data'
+
+    beam_mode_id = db.Column(TINYINT(3),primary_key=True)
+    beam_mode_name = db.Column(db.Text)
+
+
 class ElogGroupData(db.Model):
     __tablename__ = 'elog_group_data'
 
@@ -114,8 +121,3 @@ class ElogGroupData(db.Model):
     oncall = db.Column(db.Integer, primary_key=True)
     ldap_group_name = db.Column(db.Text)
 
-class ElogBeamModeData(db.Model):
-    __tablename__ = 'elog_beam_mode_data'
-
-    beam_mode_id = db.Column(TINYINT(3),primary_key=True)
-    beam_mode_title = db.Column(db.Text)
