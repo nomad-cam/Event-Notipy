@@ -79,6 +79,29 @@ class EventsData(db.Model):
     deleted = db.Column(db.Integer)
 
 
+class EventsImpactData(db.Model):
+    __tablename__ = 'events_impact_data'
+
+    impact_id = db.Column(TINYINT(3),primary_key=True,autoincrement=True)
+    impact_name = db.Column(db.Text)
+    impact_category = db.Column(db.Integer)
+
+
+class EventsStatusData(db.Model):
+    __tablename__ = 'events_status_data'
+
+    status_id = db.Column(TINYINT(3), primary_key=True, autoincrement=True)
+    status_name = db.Column(db.Text)
+
+
+class EventsSystemData(db.Model):
+    __tablename__ = 'events_system_data'
+
+    system_id = db.Column(TINYINT(3), primary_key=True, autoincrement=True)
+    system_name = db.Column(db.Text)
+    system_category = db.Column(db.Integer)
+
+
 class ElogGroupData(db.Model):
     __tablename__ = 'elog_group_data'
 
