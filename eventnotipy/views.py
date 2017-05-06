@@ -88,12 +88,12 @@ def on_change(change_type,event_id):
                         print('Trying to determine the operator')
                         if dict_rules['rule_operator'] == 'EQ':
                             # equal condition
-                            if dict_rules['rule_value'] == system.system_id:
+                            if dict_rules['rule_value'] == system.system_name:
                                 print('Found a System Match [Equal]: %s') % dict_rules['rule_value']
                                 notify_list.append(dict_data['notify_id'])
                         elif dict_rules['rule_operator'] == 'NE':
                             # not equal condition
-                            if dict_rules['rule_value'] == system.system_id:
+                            if dict_rules['rule_value'] != system.system_name:
                                 print('Found a System Match [Not Equal]: %s') % dict_rules['rule_value']
                                 notify_list.append(dict_data['notify_id'])
                         else:
@@ -107,12 +107,12 @@ def on_change(change_type,event_id):
                         print('Trying to determine the operator')
                         if dict_rules['rule_operator'] == 'EQ':
                             # equal condition
-                            if dict_rules['rule_value'] == status.status_id:
+                            if dict_rules['rule_value'] == status.status_name:
                                 print('Found a System Match [Equal]: %s') % dict_rules['rule_value']
                                 notify_list.append(dict_data['notify_id'])
                         elif dict_rules['rule_operator'] == 'NE':
                             # not equal condition
-                            if dict_rules['rule_value'] == status.status_id:
+                            if dict_rules['rule_value'] != status.status_name:
                                 print('Found a System Match [Not Equal]: %s') % dict_rules['rule_value']
                                 notify_list.append(dict_data['notify_id'])
                         else:
@@ -131,7 +131,7 @@ def on_change(change_type,event_id):
                                 notify_list.append(dict_data['notify_id'])
                         elif dict_rules['rule_operator'] == 'NE':
                             # not equal condition
-                            if dict_rules['rule_value'] == impact.impact_name:
+                            if dict_rules['rule_value'] != impact.impact_name:
                                 print('Found a System Match [Not Equal]: %s') % dict_rules['rule_value']
                                 notify_list.append(dict_data['notify_id'])
                         else:
@@ -144,12 +144,12 @@ def on_change(change_type,event_id):
                         print('Trying to determine the operator')
                         if dict_rules['rule_operator'] == 'EQ':
                             # equal condition
-                            if dict_rules['rule_value'] == mode.beam_mode_id:
+                            if dict_rules['rule_value'] == mode.beam_mode_name:
                                 print('Found a Beam Mode Match [Equal]: %s') % dict_rules['rule_value']
                                 notify_list.append(dict_data['notify_id'])
                         elif dict_rules['rule_operator'] == 'NE':
                             # not equal condition
-                            if dict_rules['rule_value'] != mode.beam_mode_id:
+                            if dict_rules['rule_value'] != mode.beam_mode_name:
                                 print('Found a Beam Mode Match [Not Equal]: %s') % dict_rules['rule_value']
                                 notify_list.append(dict_data['notify_id'])
                         else:
