@@ -84,7 +84,8 @@ def on_change(change_type,event_id):
                     # check for matches against System
                     elif dict_cond['condition_id'] == 2:
                         print('Found a System Match')
-                        system =EventsSystemData.query.filter_by(system_id=events_data.system)
+                        system =EventsSystemData.query.filter_by(system_id=events_data.system).first()
+                        # pp.pprint(system)
                         print('Trying to determine the operator')
                         if dict_rules['rule_operator'] == 'EQ':
                             # equal condition
@@ -103,7 +104,7 @@ def on_change(change_type,event_id):
                     # check for matches against Status
                     elif dict_cond['condition_id'] == 3:
                         print('Found a Status Match')
-                        status = EventsStatusData.query.filter_by(status_id=events_data.status)
+                        status = EventsStatusData.query.filter_by(status_id=events_data.status).first()
                         print('Trying to determine the operator')
                         if dict_rules['rule_operator'] == 'EQ':
                             # equal condition
@@ -122,7 +123,7 @@ def on_change(change_type,event_id):
                     # check for matches against Impact
                     elif dict_cond['condition_id'] == 4:
                         print('Found an Impact Match')
-                        impact = EventsImpactData.query.filter_by(impact_id=events_data.impact)
+                        impact = EventsImpactData.query.filter_by(impact_id=events_data.impact).first()
                         print('Trying to determine the operator')
                         if dict_rules['rule_operator'] == 'EQ':
                             # equal condition
