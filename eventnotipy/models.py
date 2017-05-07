@@ -30,6 +30,9 @@ class EventsNotificationData(db.Model):
 
     rules = db.relationship('EventsNotificationRules')
 
+    def __repr__(self):
+        return '[notify_id] %r, [notify_title] %r, [deleted] %r' % (self.notify_id,self.notify_title,self.deleted)
+
 
 class EventsNotificationRules(db.Model):
     __tablename__ = 'events_notification_rules'
@@ -39,7 +42,12 @@ class EventsNotificationRules(db.Model):
     rule_operator = db.Column(db.Text)
     rule_value = db.Column(db.Text)
 
-    conditions = db.relationship('EventsNotificationConditions')
+    notify_data = db.relationship('EventsNotificationData')
+    # conditions = db.relationship('EventsNotificationConditions')
+
+    def __repr__(self):
+        return '[notification_id] %r, [rule_condition] %r, [rule_operator] %r, [rule_value] %r, [notify_data] %r' \
+               % (self.notification_id,self.rule_condition,self.rule_operator,self.rule_value,self.notify_data)
 
 
 class EventsNotificationConditions(db.Model):
