@@ -10,6 +10,13 @@ class EventsNotificationRecipients(db.Model):
     recipient_email = db.Column(db.String)
     recipient_phone = db.Column(db.Integer)
 
+    notify_data = db.relationship('EventsNotificationData')
+
+    def __repr__(self):
+        return '[notification_id] %r, [recipient_name] %r, [recipient_email] %r, [recipient_phone] %r' % \
+               (self.notification_id,self.recipient_name,self.recipient_email,self.recipient_phone)
+
+
 class EventsNotificationData(db.Model):
     __tablename__ = 'events_notification_data'
 
