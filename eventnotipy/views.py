@@ -8,6 +8,7 @@ from eventnotipy.models import EventsNotificationConditions,EventsNotificationDa
                                ElogGroupData
 import pprint
 import requests
+import time
 
 pp = pprint.PrettyPrinter(indent=4)
 
@@ -21,7 +22,8 @@ def on_change(change_type,event_id):
     if request.method == 'POST':
 
         if event_id:
-            print('Processing a notify_id action')
+            print(time.strftime('%Y-%m-%d %H:%M:%S'))
+            print('Processing a %s request for event #%s' % (change_type,event_id))
 
             print(event_id)
             events_data = db.session.query(EventsData).filter(EventsData.event_id==event_id).first()
@@ -91,15 +93,15 @@ def on_change(change_type,event_id):
                             if rule.rule_operator == 'EQ':
                                 # equal condition
                                 if rule.rule_value == status.status_name:
-                                    print('Found a System Match [Equal]: %s') % rule.rule_value
+                                    print('Found a Status Match [Equal]: %s') % rule.rule_value
                                     notify_list.add(rule.notification_id)
                             elif rule.rule_operator == 'NE':
                                 # not equal condition
                                 if rule.rule_value != status.status_name:
-                                    print('Found a System Match [Not Equal]: %s') % rule.rule_value
+                                    print('Found a Status Match [Not Equal]: %s') % rule.rule_value
                                     notify_list.add(rule.notification_id)
                             else:
-                                print('Found a System Match, but could not determine the operator')
+                                print('Found a Status Match, but could not determine the operator')
 
 
                         # check for matches against Impact
@@ -111,15 +113,15 @@ def on_change(change_type,event_id):
                             if rule.rule_operator == 'EQ':
                                 # equal condition
                                 if rule.rule_value == impact.impact_name:
-                                    print('Found a System Match [Equal]: %s') % rule.rule_value
+                                    print('Found an Impact Match [Equal]: %s') % rule.rule_value
                                     notify_list.add(rule.notification_id)
                             elif rule.rule_operator == 'NE':
                                 # not equal condition
                                 if rule.rule_value != impact.impact_name:
-                                    print('Found a System Match [Not Equal]: %s') % rule.rule_value
+                                    print('Found an Impact Match [Not Equal]: %s') % rule.rule_value
                                     notify_list.add(rule.notification_id)
                             else:
-                                print('Found a System Match, but could not determine the operator')
+                                print('Found a Impact Match, but could not determine the operator')
 
 
                         # check for matches against Beam Mode
