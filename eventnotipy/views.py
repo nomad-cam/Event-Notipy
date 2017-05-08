@@ -177,7 +177,7 @@ def on_change(change_type,event_id):
                             # print(recipient.notify_data)
 
                             # r = requests.post('http://10.17.100.199:9119/sendmail/', data={'subject': recipient.notify_data[0].notify_title,
-                            r = requests.post('http://10.6.100.199:9119/sendmail/', data={'subject': recipient.notify_data[0].notify_title,
+                            r = requests.post('http://10.17.100.199:9119/sendmail/', data={'subject': recipient.notify_data[0].notify_title,
                                                                                            'body': recipient.notify_data[0].notify_message,
                                                                                            'recipients': recipient.recipient_email.lower()})
                             # don't care about responses r.text, r.status_code and r.reason
@@ -191,7 +191,7 @@ def on_change(change_type,event_id):
                             print('Will now send an %s SMS to %s' % (change_type,recipient.recipient_phone))
 
                             # r = requests.post('http://10.17.100.199:8080', data={'message': recipient.notify_data[0].notify_message,
-                            r = requests.post('http://10.6.100.199:8080', data={'message': recipient.notify_data[0].notify_message,
+                            r = requests.post('http://10.17.100.199:8080', data={'message': recipient.notify_data[0].notify_message,
                                                                                 'numbers': recipient.recipient_phone})
                             # don't care about responses r.text, r.status_code and r.reason
                         else:
