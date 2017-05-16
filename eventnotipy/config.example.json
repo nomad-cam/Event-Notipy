@@ -3,5 +3,9 @@
     "dbuser":       "",
     "password":     "",
     "database":     "",
-    "session_key":  ""
+    "session_key":  "",
+    "sms_host":     "",
+    "sms_localhost": "",
+    "email_host":   "",
+    "email_localhost": ""
 }
