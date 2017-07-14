@@ -41,8 +41,8 @@ def on_change(change_type,event_id):
                 # use a set as we don't care about duplicates
                 notify_list = set()
                 for rule in data_rules:
-                    # Before checking anything make sure the rule is not deleted
-                    if rule.notify_data[0].deleted == 0:
+                    # Before checking anything make sure the rule is not deleted and it's active
+                    if rule.notify_data[0].deleted == 0 and rule.notify_data[0].notify_active == 1:
                         # check for matches against Group
                         if rule.rule_condition == 1:
                             print('Found a Group Match')
