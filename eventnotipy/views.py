@@ -5,7 +5,7 @@ from eventnotipy.models import db
 from eventnotipy.models import EventsNotificationConditions,EventsNotificationData, \
                                EventsNotificationRecipients,EventsNotificationRules, \
                                EventsData,EventsImpactData,EventsStatusData,EventsSystemData, \
-                               EventsBeamModeData, \
+                               EventsBeamModeData,EventsGroups, \
                                ElogGroupData
 import pprint
 import requests
@@ -45,24 +45,31 @@ def on_change(change_type,event_id):
                     if rule.notify_data[0].deleted == 0 and rule.notify_data[0].notify_active == 1:
                         # check for matches against Group
                         if rule.rule_condition == 1:
-                            print('Found a Group Match')
-                            group = ElogGroupData.query.filter_by(group_id=events_data.group_id).first()
-                            print('Trying to determine the operator')
-                            # print(group.group_title,rule.rule_value)
-                            if rule.rule_operator == 'EQ':
-                                # equal condition
-                                if rule.rule_value == group.group_title:
-                                    print('Found a Group Match [Equal]: %s') % rule.rule_value
-                                    # if data_rules.deleted == 0:
-                                        # the event has not been deleted
-                                    notify_list.add(rule.notification_id)
-                            elif rule.rule_operator == 'NE':
-                                # not equal condition
-                                if rule.rule_value != group.group_title:
-                                    print('Found a Group Match [Not Equal]: %s') % rule.rule_value
-                                    notify_list.add(rule.notification_id)
-                            else:
-                                print('Found a Group Match, but could not determine the operator')
+                            print('Found a Group Match gid: %s, notify_id: %s' % (events_data.group_id,rule.notification_id))
+
+                            data = EventsGroups.query.filter_by(event_id=events_data.event_id).all()
+                            for d in data:
+                                print(d.event_group_id)
+                                group = ElogGroupData.query.filter_by(group_id=d.event_group_id).first()
+                                print('Group Name: %s' % group.group_title)
+                                print('Trying to determine the operator')
+                                # print(group.group_title,rule.rule_value)
+                                if rule.rule_operator == 'EQ':
+                                    # equal condition
+                                    if rule.rule_value == group.group_title:
+                                        print('Found a Group Match [Equal]: %s') % rule.rule_value
+                                        notify_list.add(rule.notification_id)
+                                    else:
+                                        print('No Match [Equal]')
+                                elif rule.rule_operator == 'NE':
+                                    # not equal condition
+                                    if rule.rule_value != group.group_title:
+                                        print('Found a Group Match [Not Equal]: %s') % rule.rule_value
+                                        notify_list.add(rule.notification_id)
+                                    else:
+                                        print('No Match [Not Equal]')
+                                else:
+                                    print('Found a Group Match, but could not determine the operator')
 
 
                         # check for matches against System
@@ -146,7 +153,7 @@ def on_change(change_type,event_id):
                             print('No Matches Found')
 
                     else:
-                        print('Sorry rule #%s has been deleted' % rule.notification_id)
+                        print('Sorry notification #%s has been deleted' % rule.notification_id)
 
                 print('The following notifications were matched:')
                 # notify list contains the notify_ids of the matched rules...
