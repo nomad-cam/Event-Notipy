@@ -4,6 +4,7 @@ from sqlalchemy.dialects.mysql import TINYINT
 class EventsNotificationRecipients(db.Model):
     __tablename__ = 'events_notification_recipients'
 
+    id = db.Column(db.Integer, primary_key=True)
     notification_id = db.Column(TINYINT(11), primary_key=True)
     # type_id = db.Column(db.Integer, primary_key=True)
     recipient_name = db.Column(db.String)
