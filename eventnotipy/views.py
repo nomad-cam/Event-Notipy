@@ -221,7 +221,8 @@ def on_change(change_type,event_id):
                             else:
                                 print('SMS %s not sent because [notify_submitted] == 0 OR [notify_updated] == 0' % change_type)
 
-
+            date = time.strftime('%Y-%m-%d %H:%M:%S')
+            print('Notifications Completed: %s' % date)
             return jsonify(event_id)
 
         else:
