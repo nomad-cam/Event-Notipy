@@ -1,5 +1,5 @@
 {
-    "host":         "",
+    "dbhost":         "",
     "dbuser":       "",
     "password":     "",
     "database":     "",
