@@ -1,6 +1,14 @@
 from eventnotipy.database import db
 from sqlalchemy.dialects.mysql import TINYINT
 
+
+class EventsGroups(db.Model):
+    __tablename__ = 'events_groups'
+
+    event_id = db.Column(db.Integer, primary_key=True)
+    event_group_id = db.Column(db.Integer, primary_key=True)
+
+
 class EventsNotificationRecipients(db.Model):
     __tablename__ = 'events_notification_recipients'
 
