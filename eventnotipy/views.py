@@ -166,49 +166,53 @@ def on_change(change_type,event_id):
 
                 for x in notify_list:
                     # recipient = EventsNotificationRecipients.query.filter_by(notification_id=x).first()
-                    recipient = db.session.query(EventsNotificationRecipients) \
-                                        .filter_by(notification_id=x) \
-                                        .join(EventsNotificationData) \
-                                        .filter_by(deleted=0) \
-                                        .first()
+                    # recipients = db.session.query(EventsNotificationRecipients) \
+                    #                     .filter_by(notification_id=x) \
+                    #                     .join(EventsNotificationData) \
+                    #                     .filter_by(deleted=0) \
+                    #                     .all()
+                    recipients = db.session.query(EventsNotificationRecipients) \
+                                          .filter_by(notification_id=x).all()
 
-                    # check if the recipient requires an email to be sent
-                    if (recipient.notify_data[0].notify_mode == 1) or (recipient.notify_data[0].notify_mode == 3):
-                        # check which notifications are required on_update or on_create
-                        print('[%s,%s] notify_mode: %s, notify_submitted: %s, notify_updated: %s' % (change_type,x,
-                                                                                                  recipient.notify_data[0].notify_mode,
-                                                                                                  recipient.notify_data[0].notify_submitted,
-                                                                                                  recipient.notify_data[0].notify_updated))
+                    # print(recipients)
+                    for recipient in recipients:
+                        print(recipient.recipient_email.lower())
+                        # check if the recipient requires an email to be sent
+                        if (recipient.notify_data[0].notify_mode == 1) or (recipient.notify_data[0].notify_mode == 3):
+                            # check which notifications are required on_update or on_create
 
-                        if ((on_create) and (recipient.notify_data[0].notify_submitted == 1)) or ((on_update) and (recipient.notify_data[0].notify_updated == 1)):
-                            print('Will now send an %s email to %s' % (change_type,recipient.recipient_email.lower()))
-                            # print(recipient.notify_data)
+                            if ((on_create) and (recipient.notify_data[0].notify_submitted == 1)) or ((on_update) and (recipient.notify_data[0].notify_updated == 1)):
+                                if recipient.recipient_email:
 
-                            # r = requests.post('http://%s:9119/sendmail/' % email_localhost, data={'subject': recipient.notify_data[0].notify_title,
-                            r = requests.post('http://%s:9119/sendmail/' % email_host, data={'subject': recipient.notify_data[0].notify_title,
-                                                                                           'body': recipient.notify_data[0].notify_message,
-                                                                                           'recipients': recipient.recipient_email.lower()})
-                            # don't care about responses r.text, r.status_code and r.reason
-                        else:
-                            print('Email %s not sent because [notify_submitted] == 0 OR [notify_updated] == 0' % change_type)
+                                    print('Will now send an %s email to %s' % (change_type,recipient.recipient_email.lower()))
 
-                    # check if the recipient requires an SMS to be sent
-                    if (recipient.notify_data[0].notify_mode == 2) or (recipient.notify_data[0].notify_mode == 3):
-                        # check which notifications are required on_update or on_create
-                        print('[%s,%s] notify_mode: %s, notify_submitted: %s, notify_updated: %s' % (change_type,x,
-                                                                                             recipient.notify_data[0].notify_mode,
-                                                                                             recipient.notify_data[0].notify_submitted,
-                                                                                             recipient.notify_data[0].notify_updated))
+                                    # r = requests.post('http://%s:9119/sendmail/' % email_localhost, data={'subject': recipient.notify_data[0].notify_title,
+                                    r = requests.post('http://%s:9119/sendmail/' % email_host, data={'subject': recipient.notify_data[0].notify_title,
+                                                                                                   'body': recipient.notify_data[0].notify_message,
+                                                                                                   'recipients': recipient.recipient_email.lower()})
+                                    # # don't care about responses r.text, r.status_code and r.reason
+                                else:
+                                    print('No email address provided. Unable to send message.')
+                            else:
+                                print('Email %s not sent because [notify_submitted] == 0 OR [notify_updated] == 0' % change_type)
 
-                        if ((on_create) and (recipient.notify_data[0].notify_submitted == 1)) or ((on_update) and (recipient.notify_data[0].notify_updated == 1)):
-                            print('Will now send an %s SMS to %s' % (change_type,recipient.recipient_phone))
+                        # check if the recipient requires an SMS to be sent
+                        if (recipient.notify_data[0].notify_mode == 2) or (recipient.notify_data[0].notify_mode == 3):
+                            # check which notifications are required on_update or on_create
 
-                            # r = requests.post('http://%s:8080' % sms_localhost, data={'message': recipient.notify_data[0].notify_message,
-                            r = requests.post('http://%s:8080' % sms_host, data={'message': recipient.notify_data[0].notify_message,
-                                                                                'numbers': recipient.recipient_phone})
-                            # don't care about responses r.text, r.status_code and r.reason
-                        else:
-                            print('SMS %s not sent because [notify_submitted] == 0 OR [notify_updated] == 0' % change_type)
+                            if ((on_create) and (recipient.notify_data[0].notify_submitted == 1)) or ((on_update) and (recipient.notify_data[0].notify_updated == 1)):
+                                if recipient.recipient_phone:
+
+                                    print('Will now send an %s SMS to %s' % (change_type,recipient.recipient_phone))
+
+                                    # r = requests.post('http://%s:8080' % sms_localhost, data={'message': recipient.notify_data[0].notify_message,
+                                    r = requests.post('http://%s:8080' % sms_host, data={'message': recipient.notify_data[0].notify_message,
+                                                                                        'numbers': recipient.recipient_phone})
+                                    # don't care about responses r.text, r.status_code and r.reason
+                                else:
+                                    print('No phone number provided. Unable to send SMS.')
+                            else:
+                                print('SMS %s not sent because [notify_submitted] == 0 OR [notify_updated] == 0' % change_type)
 
 
             return jsonify(event_id)
