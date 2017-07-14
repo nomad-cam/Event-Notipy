@@ -175,6 +175,11 @@ def on_change(change_type,event_id):
                     # check if the recipient requires an email to be sent
                     if (recipient.notify_data[0].notify_mode == 1) or (recipient.notify_data[0].notify_mode == 3):
                         # check which notifications are required on_update or on_create
+                        print('[%s,%s] notify_mode: %s, notify_submitted: %s, notify_updated: %s' % (change_type,x,
+                                                                                                  recipient.notify_data[0].notify_mode,
+                                                                                                  recipient.notify_data[0].notify_submitted,
+                                                                                                  recipient.notify_data[0].notify_updated))
+
                         if ((on_create) and (recipient.notify_data[0].notify_submitted == 1)) or ((on_update) and (recipient.notify_data[0].notify_updated == 1)):
                             print('Will now send an %s email to %s' % (change_type,recipient.recipient_email.lower()))
                             # print(recipient.notify_data)
@@ -190,6 +195,11 @@ def on_change(change_type,event_id):
                     # check if the recipient requires an SMS to be sent
                     if (recipient.notify_data[0].notify_mode == 2) or (recipient.notify_data[0].notify_mode == 3):
                         # check which notifications are required on_update or on_create
+                        print('[%s,%s] notify_mode: %s, notify_submitted: %s, notify_updated: %s' % (change_type,x,
+                                                                                             recipient.notify_data[0].notify_mode,
+                                                                                             recipient.notify_data[0].notify_submitted,
+                                                                                             recipient.notify_data[0].notify_updated))
+
                         if ((on_create) and (recipient.notify_data[0].notify_submitted == 1)) or ((on_update) and (recipient.notify_data[0].notify_updated == 1)):
                             print('Will now send an %s SMS to %s' % (change_type,recipient.recipient_phone))
 
