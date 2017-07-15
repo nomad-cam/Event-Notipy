@@ -53,6 +53,7 @@ class EventsNotificationData(db.Model):
 class EventsNotificationRules(db.Model):
     __tablename__ = 'events_notification_rules'
 
+    id = db.Column(db.Integer, primary_key=True)
     notification_id = db.Column(TINYINT(11), primary_key=True)
     rule_condition = db.Column(db.Integer, db.ForeignKey('events_notification_conditions_data.condition_id'), primary_key=True)
     rule_operator = db.Column(db.Text)
