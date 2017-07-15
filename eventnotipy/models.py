@@ -153,6 +153,31 @@ class EventsBeamModeData(db.Model):
     beam_mode_name = db.Column(db.Text)
 
 
+class EventsOncallData(db.Model):
+    __tablename__ = 'events_oncall_data'
+
+    oncall_id = db.Column(db.Integer, autoincrement=True, primary_key=True)
+    reporter = db.Column(db.Integer)
+    group_id = db.Column(db.Integer)
+    person = db.Column(db.Integer)
+    phone = db.Column(db.Text)
+    support = db.Column(db.Integer)
+    response = db.Column(db.Integer)
+    time_called = db.Column(db.DateTime)
+    time_arrived = db.Column(db.DateTime)
+    time_departed = db.Column(db.DateTime)
+    deleted = db.Column(db.Integer)
+
+
+class EventsOncalData(db.Model):
+    __tablename__ = 'events_oncall_names'
+
+    oncall_id = db.Column(db.Integer, autoincrement=True, primary_key=True)
+    oncall_group_id = db.Column(db.Integer, primary_key=True)
+    oncall_name = db.Column(db.Text)
+    oncall_phone = db.Column(db.Text)
+
+
 class ElogGroupData(db.Model):
     __tablename__ = 'elog_group_data'
 
