@@ -85,12 +85,15 @@ class EventsData(db.Model):
     reported_by = db.Column(db.Integer)
     start_date = db.Column(db.DateTime)
     end_date = db.Column(db.DateTime)
-    group_id = db.Column(TINYINT(3), db.ForeignKey('elog_group_data.group_id'))
+    optime = db.Column(db.Integer)
+    group_id = db.Column(TINYINT(3), db.ForeignKey('elog_group_data.group_id'))  # to be deleted
     impact = db.Column(TINYINT(3), db.ForeignKey('events_impact_data.impact_id'))
     system = db.Column(db.Integer, db.ForeignKey('events_system_data.system_id'))
     sub_system = db.Column(db.Text)
+    sub_system_name = db.Column(db.Text)
+    device = db.Column(db.Text)
     title = db.Column(db.Text)
-    contributors = db.Column(db.Text)
+    contributors = db.Column(db.Text) # to be deleted...
     description = db.Column(db.Text)
     resolution = db.Column(db.Text)
     actions = db.Column(db.Text)
