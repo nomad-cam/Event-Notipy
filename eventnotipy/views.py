@@ -40,6 +40,8 @@ def on_change(change_type,event_id):
 
                 # use a set as we don't care about duplicates
                 notify_list = set()
+                add_list = set()
+                rem_list = set()
                 for rule in data_rules:
                     # Before checking anything make sure the rule is not deleted and it's active
                     if rule.notify_data[0].deleted == 0 and rule.notify_data[0].notify_active == 1:
@@ -49,7 +51,7 @@ def on_change(change_type,event_id):
 
                             data = EventsGroups.query.filter_by(event_id=events_data.event_id).all()
                             for d in data:
-                                print(d.event_group_id)
+                                # print(d.event_group_id)
                                 group = ElogGroupData.query.filter_by(group_id=d.event_group_id).first()
                                 print('Group Name: %s' % group.group_title)
                                 print('Trying to determine the operator')
@@ -58,16 +60,14 @@ def on_change(change_type,event_id):
                                     # equal condition
                                     if rule.rule_value == group.group_title:
                                         print('Found a Group Match [Equal]: %s') % rule.rule_value
-                                        notify_list.add(rule.notification_id)
-                                    else:
-                                        print('No Match [Equal]')
+                                        add_list.add(rule.notification_id)
                                 elif rule.rule_operator == 'NE':
                                     # not equal condition
-                                    if rule.rule_value != group.group_title:
+                                    if rule.rule_value == group.group_title:
                                         print('Found a Group Match [Not Equal]: %s') % rule.rule_value
-                                        notify_list.add(rule.notification_id)
+                                        rem_list.add(rule.notification_id)
                                     else:
-                                        print('No Match [Not Equal]')
+                                        add_list.add(rule.notification_id)
                                 else:
                                     print('Found a Group Match, but could not determine the operator')
 
@@ -82,12 +82,14 @@ def on_change(change_type,event_id):
                                 # equal condition
                                 if rule.rule_value == system.system_name:
                                     print('Found a System Match [Equal]: %s') % rule.rule_value
-                                    notify_list.add(rule.notification_id)
+                                    add_list.add(rule.notification_id)
                             elif rule.rule_operator == 'NE':
                                 # not equal condition
-                                if rule.rule_value != system.system_name:
+                                if rule.rule_value == system.system_name:
                                     print('Found a System Match [Not Equal]: %s') % rule.rule_value
-                                    notify_list.add(rule.notification_id)
+                                    rem_list.add(rule.notification_id)
+                                else:
+                                    add_list.add(rule.notification_id)
                             else:
                                 print('Found a System Match, but could not determine the operator')
 
@@ -100,14 +102,20 @@ def on_change(change_type,event_id):
                             print('Trying to determine the operator')
                             if rule.rule_operator == 'EQ':
                                 # equal condition
+                                print('EQ %s %s' % (rule.rule_value, status.status_name))
                                 if rule.rule_value == status.status_name:
                                     print('Found a Status Match [Equal]: %s') % rule.rule_value
-                                    notify_list.add(rule.notification_id)
+                                    add_list.add(rule.notification_id)
                             elif rule.rule_operator == 'NE':
                                 # not equal condition
-                                if rule.rule_value != status.status_name:
+                                print('NE %s %s' % (rule.rule_value, status.status_name))
+                                if rule.rule_value == status.status_name:
                                     print('Found a Status Match [Not Equal]: %s') % rule.rule_value
-                                    notify_list.add(rule.notification_id)
+                                    # if rule.notification_id in notify_list:
+                                    #     print('Removing %s from the notifications list' % rule.notification_id)
+                                    rem_list.add(rule.notification_id)
+                                else:
+                                    add_list.add(rule.notification_id)
                             else:
                                 print('Found a Status Match, but could not determine the operator')
 
@@ -115,19 +123,26 @@ def on_change(change_type,event_id):
                         # check for matches against Impact
                         elif rule.rule_condition == 4:
                             print('Found an Impact Match')
+                            # fetch the impact description from the impact_id
                             impact = EventsImpactData.query.filter_by(impact_id=events_data.impact).first()
                             # print(impact.impact_name, rule.rule_value)
                             print('Trying to determine the operator')
                             if rule.rule_operator == 'EQ':
+                                print('EQ %s' % impact.impact_name)
                                 # equal condition
                                 if rule.rule_value == impact.impact_name:
                                     print('Found an Impact Match [Equal]: %s') % rule.rule_value
-                                    notify_list.add(rule.notification_id)
+                                    add_list.add(rule.notification_id)
                             elif rule.rule_operator == 'NE':
+                                print('NE %s %s' % (rule.rule_value, impact.impact_name))
                                 # not equal condition
-                                if rule.rule_value != impact.impact_name:
+                                if rule.rule_value == impact.impact_name:
                                     print('Found an Impact Match [Not Equal]: %s') % rule.rule_value
-                                    notify_list.add(rule.notification_id)
+                                    # if rule.notification_id in notify_list:
+                                    #     print('Removing %s from the notifications list' % rule.notification_id)
+                                    rem_list.add(rule.notification_id)
+                                else:
+                                    add_list.add(rule.notification_id)
                             else:
                                 print('Found a Impact Match, but could not determine the operator')
 
@@ -141,12 +156,16 @@ def on_change(change_type,event_id):
                                 # equal condition
                                 if rule.rule_value == mode.beam_mode_name:
                                     print('Found a Beam Mode Match [Equal]: %s') % rule.rule_value
-                                    notify_list.add(rule.notification_id)
+                                    add_list.add(rule.notification_id)
                             elif rule.rule_operator == 'NE':
                                 # not equal condition
-                                if rule.rule_value != mode.beam_mode_name:
+                                if rule.rule_value == mode.beam_mode_name:
                                     print('Found a Beam Mode Match [Not Equal]: %s') % rule.rule_value
-                                    notify_list.add(rule.notification_id)
+                                    # if rule.notification_id in notify_list:
+                                    #     print('Removing %s from the notifications list' % rule.notification_id)
+                                    rem_list.add(rule.notification_id)
+                                else:
+                                    add_list.add(rule.notification_id)
                             else:
                                 print('Found a Beam Mode Match, but could not determine the Operator')
                         else:
@@ -157,7 +176,12 @@ def on_change(change_type,event_id):
 
                 print('The following notifications were matched:')
                 # notify list contains the notify_ids of the matched rules...
-                print(notify_list)
+                for item in add_list:
+                    if item not in rem_list:
+                        notify_list.add(item)
+
+                print('add: %s, remove: %s, final: %s' % (add_list,rem_list,notify_list))
+
 
                 ########################################################################################################
                 # now we have the matched rules, get the details and send out the message
