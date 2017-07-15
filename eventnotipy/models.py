@@ -107,6 +107,13 @@ class EventsData(db.Model):
     deleted = db.Column(db.Integer)
 
 
+class EventsContributors(db.Model):
+    __table_name__ = 'events_contributors'
+
+    events_id = db.Column(db.Integer, primary_key=True)
+    event_contributor_id = db.Column(db.Integer, primary_key=True)
+
+
 class EventsImpactData(db.Model):
     __tablename__ = 'events_impact_data'
 
