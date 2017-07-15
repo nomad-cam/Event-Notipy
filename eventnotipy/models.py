@@ -112,7 +112,6 @@ class EventsContributors(db.Model):
 
     event_id = db.Column(db.Integer, primary_key=True)
     event_contributor_id = db.Column(db.Integer, primary_key=True)
-    contributor_name = db.Column(db.String, db.ForeignKey())
 
 
 class EventsImpactData(db.Model):
