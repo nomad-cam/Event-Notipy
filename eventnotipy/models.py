@@ -169,7 +169,7 @@ class EventsOncallData(db.Model):
     deleted = db.Column(db.Integer)
 
 
-class EventsOncalData(db.Model):
+class EventsOncallNames(db.Model):
     __tablename__ = 'events_oncall_names'
 
     oncall_id = db.Column(db.Integer, autoincrement=True, primary_key=True)
