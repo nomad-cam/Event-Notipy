@@ -77,6 +77,12 @@ class EventsNotificationConditions(db.Model):
     rules = db.relationship(EventsNotificationRules)
 
 
+class EventsContributors(db.Model):
+    __table_name__ = 'events_contributors'
+
+    event_id = db.Column(db.Integer, db.ForeignKey('events_data.event_id'), primary_key=True)
+    event_contributor_id = db.Column(db.Integer, db.ForeignKey('sol_users.id'), primary_key=True)
+
 
 class EventsData(db.Model):
     __tablename__ = 'events_data'
@@ -106,12 +112,7 @@ class EventsData(db.Model):
     elog_id = db.Column(db.Integer)
     deleted = db.Column(db.Integer)
 
-
-class EventsContributors(db.Model):
-    __table_name__ = 'events_contributors'
-
-    event_id = db.Column(db.Integer, primary_key=True)
-    event_contributor_id = db.Column(db.Integer, primary_key=True)
+    contributor_name = db.relationship(EventsContributors)
 
 
 class EventsImpactData(db.Model):
@@ -194,3 +195,10 @@ class SolUsers(db.Model):
     guest = db.Column(TINYINT(4))
     operator = db.Column(TINYINT(4))
     active = db.Column(db.Integer)
+
+
+class ElogBeamModeData(db.Model):
+    __tablename__ = 'elog_beam_mode_data'
+
+    beam_mode_id = db.Column(TINYINT(3),autoincrement=True,primary_key=True)
+    beam_mode_title = db.Column(db.Text)
