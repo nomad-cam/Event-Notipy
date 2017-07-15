@@ -172,7 +172,7 @@ def on_change(change_type,event_id):
                             print('No Matches Found')
 
                     else:
-                        print('Sorry notification #%s has been deleted' % rule.notification_id)
+                        print('Sorry notification #%s has been deleted or disabled' % rule.notification_id)
 
                 print('The following notifications were matched:')
                 # notify list contains the notify_ids of the matched rules...
