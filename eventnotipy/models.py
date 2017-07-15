@@ -112,6 +112,7 @@ class EventsContributors(db.Model):
 
     event_id = db.Column(db.Integer, primary_key=True)
     event_contributor_id = db.Column(db.Integer, primary_key=True)
+    contributor_name = db.Column(db.String, db.ForeignKey())
 
 
 class EventsImpactData(db.Model):
@@ -169,3 +170,28 @@ class Templates(db.Model):
     user_id = db.Column(db.Integer)
     sort = db.Column(db.Integer)
     deleted = db.Column(TINYINT(3))
+
+
+class SolUsers(db.Model):
+    __tablename__ = 'sol_users'
+
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    name = db.Column(db.String(255))
+    username = db.Column(db.String(150))
+    email = db.Column(db.String(100))
+    phone = db.Column(db.String(10))
+    password = db.Column(db.String(100))
+    gid = db.Column(db.Integer)
+    resgisterDate = db.Column(db.DateTime)
+    lastvisitDate = db.Column(db.DateTime)
+    elog_hide_important = db.Column(TINYINT(4))
+    elog_collapse_all = db.Column(TINYINT(4))
+    elog_entries_per_page = db.Column(db.Integer)
+    site_nickname = db.Column(db.String)
+    elog_simple_editor = db.Column(TINYINT(4))
+    elog_shadow_boxer = db.Column(TINYINT(11))
+    elog_show_keywords = db.Column(TINYINT(1))
+    elog_date_format = db.Column(db.String)
+    guest = db.Column(TINYINT(4))
+    operator = db.Column(TINYINT(4))
+    active = db.Column(db.Integer)
