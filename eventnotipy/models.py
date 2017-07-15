@@ -12,7 +12,7 @@ class EventsGroups(db.Model):
 class EventsNotificationRecipients(db.Model):
     __tablename__ = 'events_notification_recipients'
 
-    id = db.Column(db.Integer, primary_key=True)
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     notification_id = db.Column(TINYINT(11), primary_key=True)
     # type_id = db.Column(db.Integer, primary_key=True)
     recipient_name = db.Column(db.String)
@@ -53,7 +53,7 @@ class EventsNotificationData(db.Model):
 class EventsNotificationRules(db.Model):
     __tablename__ = 'events_notification_rules'
 
-    id = db.Column(db.Integer, primary_key=True)
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     notification_id = db.Column(TINYINT(11), primary_key=True)
     rule_condition = db.Column(db.Integer, db.ForeignKey('events_notification_conditions_data.condition_id'), primary_key=True)
     rule_operator = db.Column(db.Text)
@@ -146,3 +146,16 @@ class ElogGroupData(db.Model):
     oncall = db.Column(db.Integer, primary_key=True)
     ldap_group_name = db.Column(db.Text)
 
+
+class Templates(db.Model):
+    __tablename__ = 'templates'
+
+    template_id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    title = db.Column(db.String(255))
+    body = db.Column(db.Text)
+    group_id = db.Column(db.Integer)
+    created = db.Column(db.TIMESTAMP)
+    edited = db.Column(db.TIMESTAMP)
+    user_id = db.Column(db.Integer)
+    sort = db.Column(db.Integer)
+    deleted = db.Column(TINYINT(3))
