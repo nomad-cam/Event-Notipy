@@ -181,7 +181,7 @@ class SolUsers(db.Model):
     phone = db.Column(db.String(10))
     password = db.Column(db.String(100))
     gid = db.Column(db.Integer)
-    resgisterDate = db.Column(db.DateTime)
+    registerDate = db.Column(db.DateTime)
     lastvisitDate = db.Column(db.DateTime)
     elog_hide_important = db.Column(TINYINT(4))
     elog_collapse_all = db.Column(TINYINT(4))
