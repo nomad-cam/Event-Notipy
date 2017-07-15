@@ -253,6 +253,10 @@ def on_change(change_type,event_id):
                                     #  Fetch the beam mode
                                     mode = EventsBeamModeData.query.filter_by(beam_mode_id=events_data.beam_mode).first()
 
+                                    # Generate the optime in HH:MM
+                                    hh, mm = divmod(events_data.optime,60)
+                                    opt = '%02d:%02d' % (hh, mm)
+
                                     # generate the template conversion
                                     body_text = Template(template.body)
                                     body_format = body_text.safe_substitute(event_id=events_data.event_id,
@@ -263,7 +267,7 @@ def on_change(change_type,event_id):
                                                          event_sub_system=sub.sub_system_name,
                                                          event_beam_mode=mode.beam_mode_name,
                                                          event_contributors=contrib_string[:-2],
-                                                         event_optime=events_data.optime,
+                                                         event_optime=opt,
                                                          event_oncall_str=oncall_string[:-2],
                                                          event_description=events_data.description,
                                                          event_resolution=events_data.resolution,
