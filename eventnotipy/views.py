@@ -270,7 +270,7 @@ def on_change(change_type,event_id):
                                                          event_actions=events_data.actions
                                                          )
 
-                                    print(body_format)
+                                    # print(body_format)
 
                                     print('Will now send an %s email to %s' % (change_type,recipient.recipient_email.lower()))
 
