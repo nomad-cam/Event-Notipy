@@ -219,8 +219,9 @@ def on_change(change_type,event_id):
 
                                     # r = requests.post('http://%s:9119/sendmail/' % email_localhost, data={'subject': recipient.notify_data[0].notify_title,
                                     r = requests.post('http://%s:9119/sendmail/' % email_host, data={'subject': recipient.notify_data[0].notify_title,
-                                                                                                   'body': recipient.notify_data[0].notify_message,
-                                                                                                   'recipients': recipient.recipient_email.lower()})
+                                                                                                     'from': 'JOE',
+                                                                                                     'body': recipient.notify_data[0].notify_message,
+                                                                                                     'recipients': recipient.recipient_email.lower()})
                                     # # don't care about responses r.text, r.status_code and r.reason
                                 else:
                                     print('No email address provided. Unable to send message.')
