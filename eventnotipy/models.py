@@ -138,6 +138,14 @@ class EventsSystemData(db.Model):
     system_category = db.Column(db.Integer)
 
 
+class EventsSubSystemData(db.Model):
+    __tablename__ = 'events_sub_system_data'
+
+    sub_system_id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    sub_system_name = db.Column(db.Text)
+    sub_system_category = db.Column(db.Integer, primary_key=True)
+
+
 class EventsBeamModeData(db.Model):
     __tablename__ = 'events_beam_mode_data'
 
