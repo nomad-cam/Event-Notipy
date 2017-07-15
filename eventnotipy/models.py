@@ -110,7 +110,7 @@ class EventsData(db.Model):
 class EventsContributors(db.Model):
     __table_name__ = 'events_contributors'
 
-    events_id = db.Column(db.Integer, primary_key=True)
+    event_id = db.Column(db.Integer, primary_key=True)
     event_contributor_id = db.Column(db.Integer, primary_key=True)
 
 
