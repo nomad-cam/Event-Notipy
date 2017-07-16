@@ -7,7 +7,7 @@ from eventnotipy.models import EventsNotificationConditions, EventsNotificationD
                                EventsData, EventsImpactData, EventsStatusData, EventsSystemData, \
                                EventsBeamModeData, EventsGroups, EventsContributors, \
                                EventsSubSystemData, EventsOncallData, EventsOncallNames, \
-                               ElogGroupData, ElogBeamModeData,\
+                               ElogGroupData, ElogBeamModeData, \
                                Templates, SolUsers
 from string import Template
 import pprint
@@ -16,21 +16,23 @@ import time
 
 pp = pprint.PrettyPrinter(indent=4)
 
+
 @app.route('/')
 def hello_world():
     return 'Access Denied!'
 
+
 # <change type> = 'on_create', 'on_update'
-@app.route('/event/<change_type>/<int:event_id>', methods=['GET','POST'])
-def on_change(change_type,event_id):
+@app.route('/event/<change_type>/<int:event_id>', methods=['GET', 'POST'])
+def on_change(change_type, event_id):
     if request.method == 'POST':
 
         if event_id:
             print(time.strftime('%Y-%m-%d %H:%M:%S'))
-            print('Processing a %s request for event #%s' % (change_type,event_id))
+            print('Processing a %s request for event #%s' % (change_type, event_id))
 
             print(event_id)
-            events_data = db.session.query(EventsData).filter(EventsData.event_id==event_id).first()
+            events_data = db.session.query(EventsData).filter(EventsData.event_id == event_id).first()
             # pp.pprint(events_data.__dict__)
 
             # if the event can be found continue...
@@ -50,7 +52,7 @@ def on_change(change_type,event_id):
                     if rule.notify_data[0].deleted == 0 and rule.notify_data[0].notify_active == 1:
                         # check for matches against Group
                         if rule.rule_condition == 1:
-                            print('Found a Group Match gid: %s, notify_id: %s' % (events_data.group_id,rule.notification_id))
+                            print('Found a Group Match gid: %s, notify_id: %s' % (events_data.group_id, rule.notification_id))
 
                             data = EventsGroups.query.filter_by(event_id=events_data.event_id).all()
                             for d in data:
@@ -74,11 +76,10 @@ def on_change(change_type,event_id):
                                 else:
                                     print('Found a Group Match, but could not determine the operator')
 
-
                         # check for matches against System
                         elif rule.rule_condition == 2:
                             print('Found a System Match')
-                            system =EventsSystemData.query.filter_by(system_id=events_data.system).first()
+                            system = EventsSystemData.query.filter_by(system_id=events_data.system).first()
                             # print(system.system_name, rule.rule_value)
                             print('Trying to determine the operator')
                             if rule.rule_operator == 'EQ':
@@ -95,7 +96,6 @@ def on_change(change_type,event_id):
                                     add_list.add(rule.notification_id)
                             else:
                                 print('Found a System Match, but could not determine the operator')
-
 
                         # check for matches against Status
                         elif rule.rule_condition == 3:
@@ -122,7 +122,6 @@ def on_change(change_type,event_id):
                             else:
                                 print('Found a Status Match, but could not determine the operator')
 
-
                         # check for matches against Impact
                         elif rule.rule_condition == 4:
                             print('Found an Impact Match')
@@ -148,7 +147,6 @@ def on_change(change_type,event_id):
                                     add_list.add(rule.notification_id)
                             else:
                                 print('Found a Impact Match, but could not determine the operator')
-
 
                         # check for matches against Beam Mode
                         elif rule.rule_condition == 5:
@@ -183,8 +181,7 @@ def on_change(change_type,event_id):
                     if item not in rem_list:
                         notify_list.add(item)
 
-                print('add: %s, remove: %s, final: %s' % (add_list,rem_list,notify_list))
-
+                print('add: %s, remove: %s, final: %s' % (add_list, rem_list, notify_list))
 
                 ########################################################################################################
                 # now we have the matched rules, get the details and send out the message
@@ -239,8 +236,8 @@ def on_change(change_type,event_id):
                                     if events_data.on_call:
                                         oncall_ids = str(events_data.on_call).split(',')
 
-                                        for id in oncall_ids:
-                                            tmp = EventsOncallData.query.filter_by(oncall_id=id).first()
+                                        for oid in oncall_ids:
+                                            tmp = EventsOncallData.query.filter_by(oncall_id=oid).first()
                                             tmp2 = EventsOncallNames.query.filter_by(oncall_id=tmp.person).first()
                                             oncall_string += tmp2.oncall_name + ', '
 
@@ -272,12 +269,11 @@ def on_change(change_type,event_id):
                                                          event_oncall_str=oncall_string[:-2],
                                                          event_description=events_data.description,
                                                          event_resolution=events_data.resolution,
-                                                         event_actions=events_data.actions
-                                                         )
+                                                         event_actions=events_data.actions)
 
                                     # print(body_format)
 
-                                    print('Will now send an %s email to %s' % (change_type,recipient.recipient_email.lower()))
+                                    print('Will now send an %s email to %s' % (change_type, recipient.recipient_email.lower()))
 
                                     # r = requests.post('http://%s:9119/sendmail/' % email_localhost, data={'subject': recipient.notify_data[0].notify_title,
                                     r = requests.post('http://%s:9119/sendmail/' % email_host, data={'subject': events_data.title,
@@ -303,7 +299,7 @@ def on_change(change_type,event_id):
                                                                             event_title=events_data.title
                                                                             )
 
-                                    print('Will now send an %s SMS to %s' % (change_type,recipient.recipient_phone))
+                                    print('Will now send an %s SMS to %s' % (change_type, recipient.recipient_phone))
 
                                     # r = requests.post('http://%s:8080' % sms_localhost, data={'message': recipient.notify_data[0].notify_message,
                                     r = requests.post('http://%s:8080' % sms_host, data={'message': body_format,
@@ -324,4 +320,3 @@ def on_change(change_type,event_id):
 
     if request.method == 'GET':
         return '/Event Not Available'
-
