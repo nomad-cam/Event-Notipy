@@ -1,5 +1,6 @@
 from flask import request, jsonify
 from eventnotipy import app
+from eventnotipy.api import api_route
 from eventnotipy.config import sms_host, sms_localhost, email_host, email_localhost
 from eventnotipy.models import db
 from eventnotipy.models import EventsNotificationConditions, EventsNotificationData, \
@@ -13,6 +14,8 @@ from string import Template
 import pprint
 import requests
 import time
+
+app.register_blueprint(api_route, url_prefix='/api/v1')
 
 pp = pprint.PrettyPrinter(indent=4)
 
@@ -64,12 +67,12 @@ def on_change(change_type, event_id):
                                 if rule.rule_operator == 'EQ':
                                     # equal condition
                                     if rule.rule_value == group.group_title:
-                                        print('Found a Group Match [Equal]: %s') % rule.rule_value
+                                        print('Found a Group Match [Equal]: %s' % rule.rule_value)
                                         add_list.add(rule.notification_id)
                                 elif rule.rule_operator == 'NE':
                                     # not equal condition
                                     if rule.rule_value == group.group_title:
-                                        print('Found a Group Match [Not Equal]: %s') % rule.rule_value
+                                        print('Found a Group Match [Not Equal]: %s' % rule.rule_value)
                                         rem_list.add(rule.notification_id)
                                     else:
                                         add_list.add(rule.notification_id)
@@ -85,12 +88,12 @@ def on_change(change_type, event_id):
                             if rule.rule_operator == 'EQ':
                                 # equal condition
                                 if rule.rule_value == system.system_name:
-                                    print('Found a System Match [Equal]: %s') % rule.rule_value
+                                    print('Found a System Match [Equal]: %s' % rule.rule_value)
                                     add_list.add(rule.notification_id)
                             elif rule.rule_operator == 'NE':
                                 # not equal condition
                                 if rule.rule_value == system.system_name:
-                                    print('Found a System Match [Not Equal]: %s') % rule.rule_value
+                                    print('Found a System Match [Not Equal]: %s' % rule.rule_value)
                                     rem_list.add(rule.notification_id)
                                 else:
                                     add_list.add(rule.notification_id)
@@ -335,65 +338,3 @@ def on_change(change_type, event_id):
     if request.method == 'GET':
         return '/Event Not Available'
 
-
-#
-# Create a notification that is triggered on a specific JOE
-# <user_id> - as specified from ldap username string
-#
-# <event_id> - the JOE id
-@app.route('/api/v1/notifications/<user_id>/<int:event_id>/', methods=['POST'])
-def api_add_event(event_id, user_id):
-    if request.method == 'POST':
-        return jsonify(event_id=event_id, user_id=user_id)
-
-
-#
-# Show all notifications
-@app.route('/api/v1/notifications/', methods=['GET'])
-def api_display_current():
-    if request.method == 'GET':
-        notifications = EventsNotificationData.get_all_current()
-        results = []
-
-        for result in notifications:
-            obj = {
-                'id': result.notify_id,
-                'title': result.notify_title,
-                'active': result.notify_active,
-                'date_created': result.notify_date_added,
-                'date_modified': result.notify_date_modified
-            }
-            results.append(obj)
-
-        response = jsonify(results)
-        response.status_code = 200
-        return response
-
-#
-# Show all notifications assigned to a specific user
-# <user_id> - as specified from ldap username string
-@app.route('/api/v1/notifications/<user_id>/', methods=['GET'])
-def api_display_user(user_id):
-    if request.method == 'GET':
-        return jsonify(user_id=user_id)
-
-
-#
-# Create a notification that is triggered on condition/operator/value
-# <user_id> - as specified from ldap username string
-#
-# <condition> - 1 = Group
-#               2 = System
-#               3 = Status
-#               4 = Impact
-#               5 = Beam Mode
-#
-# <operator> - EQ = equals
-#              NE = not equals
-#
-# <value> - condition specific, see docs for more information
-#
-@app.route('/api/v1/notifications/<user_id>/<int:condition>/<operator>/<value>/', methods=['POST'])
-def api_add_condition(user_id, condition, operator, value):
-    if request.method == 'POST':
-        return jsonify(user_id=user_id, condition=condition, operator=operator, value=value)
