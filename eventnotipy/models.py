@@ -38,8 +38,8 @@ class EventsNotificationData(db.Model):
     notify_updated = db.Column(TINYINT(11))
     notify_mode = db.Column(TINYINT(11))
     notify_message = db.Column(db.Text)
-    notify_date_added = db.Column(db.DateTime)
-    notify_date_modified = db.Column(db.DateTime)
+    notify_date_added = db.Column(db.DateTime, default=db.func.current_timestamp())
+    notify_date_modified = db.Column(db.DateTime, onupdate=db.func.current_timestamp())
     notify_date_deleted = db.Column(db.DateTime)
     notify_active = db.Column(TINYINT(11))
     deleted = db.Column(db.Integer)
@@ -48,6 +48,14 @@ class EventsNotificationData(db.Model):
 
     def __repr__(self):
         return '[notify_id] %r, [notify_title] %r, [deleted] %r' % (self.notify_id,self.notify_title,self.deleted)
+
+    @staticmethod
+    def get_all_current():
+        return EventsNotificationData.query.filter_by(deleted=0).all()
+
+    @staticmethod
+    def get_all():
+        return EventsNotificationData.query.all()
 
 
 class EventsNotificationRules(db.Model):
