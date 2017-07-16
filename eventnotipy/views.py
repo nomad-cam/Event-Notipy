@@ -195,6 +195,9 @@ def on_change(change_type, event_id):
                 if change_type == 'on_update':
                     on_update = True
 
+                sent_email_list = []
+                sent_sms_list = []
+
                 for x in notify_list:
                     # recipient = EventsNotificationRecipients.query.filter_by(notification_id=x).first()
                     # recipients = db.session.query(EventsNotificationRecipients) \
@@ -204,9 +207,6 @@ def on_change(change_type, event_id):
                     #                     .all()
                     recipients = db.session.query(EventsNotificationRecipients) \
                                           .filter_by(notification_id=x).all()
-
-                    sent_email_list = []
-                    sent_sms_list = []
 
                     for recipient in recipients:
                         print(recipient.recipient_email.lower())
@@ -224,6 +224,7 @@ def on_change(change_type, event_id):
                             if ((on_create) and (recipient.notify_data[0].notify_submitted == 1)) or ((on_update) and (recipient.notify_data[0].notify_updated == 1)):
                                 if recipient.recipient_email:
                                     if recipient.recipient_name not in sent_email_list:
+                                        print('Sent emails: %s' % sent_email_list)
 
                                         template = Templates.query.filter_by(deleted=0).filter_by(title=impact.impact_name).first()
 
@@ -279,10 +280,10 @@ def on_change(change_type, event_id):
                                         print('Will now send an %s email to %s' % (change_type, recipient.recipient_email.lower()))
 
                                         # r = requests.post('http://%s:9119/sendmail/' % email_localhost, data={'subject': recipient.notify_data[0].notify_title,
-                                        # r = requests.post('http://%s:9119/sendmail/' % email_host, data={'subject': events_data.title,
-                                        #                                                                  'from': 'JOE',
-                                        #                                                                  'body': body_format,
-                                        #                                                                  'recipients': recipient.recipient_email.lower()})
+                                        r = requests.post('http://%s:9119/sendmail/' % email_host, data={'subject': events_data.title,
+                                                                                                         'from': 'JOE',
+                                                                                                         'body': body_format,
+                                                                                                         'recipients': recipient.recipient_email.lower()})
                                         # # don't care about responses r.text, r.status_code and r.reason
                                         # add recipient to the already sent list
                                         sent_email_list.append(recipient.recipient_name)
@@ -301,6 +302,7 @@ def on_change(change_type, event_id):
                             if ((on_create) and (recipient.notify_data[0].notify_submitted == 1)) or ((on_update) and (recipient.notify_data[0].notify_updated == 1)):
                                 if recipient.recipient_phone:
                                     if recipient.recipient_name not in sent_sms_list:
+                                        print('Sent SMS %s' % sent_sms_list)
 
                                         body_text = Template("Hello JOE\n$event_title\nJOE id: $event_id\nStatus: $event_status")
                                         body_format = body_text.safe_substitute(event_id=events_data.event_id,
@@ -311,8 +313,8 @@ def on_change(change_type, event_id):
                                         print('Will now send an %s SMS to %s' % (change_type, recipient.recipient_phone))
 
                                         # r = requests.post('http://%s:8080' % sms_localhost, data={'message': recipient.notify_data[0].notify_message,
-                                        # r = requests.post('http://%s:8080' % sms_host, data={'message': body_format,
-                                        #                                                     'numbers': recipient.recipient_phone})
+                                        r = requests.post('http://%s:8080' % sms_host, data={'message': body_format,
+                                                                                            'numbers': recipient.recipient_phone})
                                         # don't care about responses r.text, r.status_code and r.reason
                                         sent_sms_list.append(recipient.recipient_name)
                                     else:
