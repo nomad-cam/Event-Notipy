@@ -36,12 +36,33 @@ def api_display_current():
         results = []
 
         for result in notifications:
+            mode_string = ''
+            if result.notify_mode == 1:
+                mode_string = 'email only'
+            if result.notify_mode == 2:
+                mode_string = 'sms only'
+            if result.notify_mode == 3:
+                mode_string = 'both email and sms'
+
+            if result.notify_submitted:
+                on_submit_string = 'True'
+            else:
+                on_submit_string = 'False'
+
+            if result.notify_updated:
+                on_update_string = 'True'
+            else:
+                on_update_string = 'False'
+
             obj = {
                 'id': result.notify_id,
                 'title': result.notify_title,
                 'active': result.notify_active,
                 'date_created': result.notify_date_added,
-                'date_modified': result.notify_date_modified
+                'date_modified': result.notify_date_modified,
+                'mode': mode_string,
+                'on_update': on_update_string,
+                'on_submit': on_submit_string,
             }
             results.append(obj)
 
@@ -68,12 +89,33 @@ def api_display_user(username):
                 .filter_by(deleted=0).all()
 
             for result in notifications:
+                mode_string = ''
+                if result.notify_mode == 1:
+                    mode_string = 'email only'
+                if result.notify_mode == 2:
+                    mode_string = 'sms only'
+                if result.notify_mode == 3:
+                    mode_string = 'both email and sms'
+
+                if result.notify_submitted:
+                    on_submit_string = 'True'
+                else:
+                    on_submit_string = 'False'
+
+                if result.notify_updated:
+                    on_update_string = 'True'
+                else:
+                    on_update_string = 'False'
+
                 obj = {
                     'id': result.notify_id,
                     'title': result.notify_title,
                     'active': result.notify_active,
                     'date_created': result.notify_date_added,
-                    'date_modified': result.notify_date_modified
+                    'date_modified': result.notify_date_modified,
+                    'mode': mode_string,
+                    'on_update': on_update_string,
+                    'on_submit': on_submit_string,
                 }
                 results.append(obj)
 
