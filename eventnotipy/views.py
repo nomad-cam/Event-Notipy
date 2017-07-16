@@ -110,13 +110,13 @@ def on_change(change_type, event_id):
                                 # equal condition
                                 print('EQ %s %s' % (rule.rule_value, status.status_name))
                                 if rule.rule_value == status.status_name:
-                                    print('Found a Status Match [Equal]: %s') % rule.rule_value
+                                    print('Found a Status Match [Equal]: %s' % rule.rule_value)
                                     add_list.add(rule.notification_id)
                             elif rule.rule_operator == 'NE':
                                 # not equal condition
                                 print('NE %s %s' % (rule.rule_value, status.status_name))
                                 if rule.rule_value == status.status_name:
-                                    print('Found a Status Match [Not Equal]: %s') % rule.rule_value
+                                    print('Found a Status Match [Not Equal]: %s' % rule.rule_value)
                                     # if rule.notification_id in notify_list:
                                     #     print('Removing %s from the notifications list' % rule.notification_id)
                                     rem_list.add(rule.notification_id)
@@ -136,13 +136,13 @@ def on_change(change_type, event_id):
                                 print('EQ %s' % impact.impact_name)
                                 # equal condition
                                 if rule.rule_value == impact.impact_name:
-                                    print('Found an Impact Match [Equal]: %s') % rule.rule_value
+                                    print('Found an Impact Match [Equal]: %s' % rule.rule_value)
                                     add_list.add(rule.notification_id)
                             elif rule.rule_operator == 'NE':
                                 print('NE %s %s' % (rule.rule_value, impact.impact_name))
                                 # not equal condition
                                 if rule.rule_value == impact.impact_name:
-                                    print('Found an Impact Match [Not Equal]: %s') % rule.rule_value
+                                    print('Found an Impact Match [Not Equal]: %s' % rule.rule_value)
                                     # if rule.notification_id in notify_list:
                                     #     print('Removing %s from the notifications list' % rule.notification_id)
                                     rem_list.add(rule.notification_id)
@@ -159,12 +159,12 @@ def on_change(change_type, event_id):
                             if rule.rule_operator == 'EQ':
                                 # equal condition
                                 if rule.rule_value == mode.beam_mode_name:
-                                    print('Found a Beam Mode Match [Equal]: %s') % rule.rule_value
+                                    print('Found a Beam Mode Match [Equal]: %s' % rule.rule_value)
                                     add_list.add(rule.notification_id)
                             elif rule.rule_operator == 'NE':
                                 # not equal condition
                                 if rule.rule_value == mode.beam_mode_name:
-                                    print('Found a Beam Mode Match [Not Equal]: %s') % rule.rule_value
+                                    print('Found a Beam Mode Match [Not Equal]: %s' % rule.rule_value)
                                     # if rule.notification_id in notify_list:
                                     #     print('Removing %s from the notifications list' % rule.notification_id)
                                     rem_list.add(rule.notification_id)
@@ -224,7 +224,8 @@ def on_change(change_type, event_id):
                         if (recipient.notify_data[0].notify_mode == 1) or (recipient.notify_data[0].notify_mode == 3):
                             # check which notifications are required on_update or on_create
 
-                            if ((on_create) and (recipient.notify_data[0].notify_submitted == 1)) or ((on_update) and (recipient.notify_data[0].notify_updated == 1)):
+                            if ((on_create) and (recipient.notify_data[0].notify_submitted == 1)) \
+                                    or ((on_update) and (recipient.notify_data[0].notify_updated == 1)):
                                 if recipient.recipient_email:
                                     if recipient.recipient_name not in sent_email_list:
                                         print('Sent emails: %s' % sent_email_list)
