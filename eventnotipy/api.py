@@ -12,14 +12,19 @@ from eventnotipy.models import EventsNotificationConditions, EventsNotificationD
 api_route = Blueprint('api_route',__name__)
 
 #
-# Create a notification that is triggered on a specific JOE
-# <user_id> - as specified from ldap username string
+# Create/Delete a notification that is triggered on a specific JOE
+# <username> - as specified from ldap username string
 #
 # <event_id> - the JOE id
-@api_route.route('/notifications/<user_id>/<int:event_id>/', methods=['POST'])
-def api_add_event(event_id, user_id):
+@api_route.route('/notifications/<username>/<int:event_id>/', methods=['POST, DELETE'])
+def api_add_event(event_id, username):
     if request.method == 'POST':
-        return jsonify(event_id=event_id, user_id=user_id)
+        #response 201
+        return jsonify(method='POST',event_id=event_id, user_id=username)
+
+    if request.method == 'DELETE':
+        # response 200
+        return jsonify(method='DELETE',event_id=event_id, user_id=username)
 
 
 #
@@ -44,13 +49,37 @@ def api_display_current():
         response.status_code = 200
         return response
 
+
 #
 # Show all notifications assigned to a specific user
 # <user_id> - as specified from ldap username string
-@api_route.route('/notifications/<user_id>/', methods=['GET'])
-def api_display_user(user_id):
+@api_route.route('/notifications/<username>/', methods=['GET'])
+def api_display_user(username):
     if request.method == 'GET':
-        return jsonify(user_id=user_id)
+        user_id = db.session.query(SolUsers.id, SolUsers.name).filter_by(username=username).first()
+        recipients_events = db.session.query(EventsNotificationRecipients.notification_id)\
+            .filter_by(recipient_name=user_id.name).all()
+
+        results = []
+        for event in recipients_events:
+
+            notifications = EventsNotificationData.query\
+                .filter_by(notify_id=event.notification_id)\
+                .filter_by(deleted=0).all()
+
+            for result in notifications:
+                obj = {
+                    'id': result.notify_id,
+                    'title': result.notify_title,
+                    'active': result.notify_active,
+                    'date_created': result.notify_date_added,
+                    'date_modified': result.notify_date_modified
+                }
+                results.append(obj)
+
+        response = jsonify(results)
+        response.status_code = 200
+        return response
 
 
 #
@@ -71,4 +100,5 @@ def api_display_user(user_id):
 @api_route.route('/notifications/<user_id>/<int:condition>/<operator>/<value>/', methods=['POST'])
 def api_add_condition(user_id, condition, operator, value):
     if request.method == 'POST':
+        # response 200
         return jsonify(user_id=user_id, condition=condition, operator=operator, value=value)

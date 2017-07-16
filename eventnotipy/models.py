@@ -57,6 +57,9 @@ class EventsNotificationData(db.Model):
     def get_all():
         return EventsNotificationData.query.all()
 
+    def get_all_user(this):
+        return EventsNotificationData.query.filter_by(notify_reporter_id=this).all()
+
 
 class EventsNotificationRules(db.Model):
     __tablename__ = 'events_notification_rules'
