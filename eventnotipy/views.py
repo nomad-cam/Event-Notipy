@@ -205,7 +205,9 @@ def on_change(change_type, event_id):
                     recipients = db.session.query(EventsNotificationRecipients) \
                                           .filter_by(notification_id=x).all()
 
-                    # print(recipients)
+                    sent_email_to = []
+                    sent_sms_to = []
+
                     for recipient in recipients:
                         print(recipient.recipient_email.lower())
 
