@@ -195,24 +195,33 @@ def on_change(change_type, event_id):
                 if change_type == 'on_create':
                     on_create = True
 
-                if change_type == 'on_update':
-                    on_update = True
+
 
                 sent_email_list = []
                 sent_sms_list = []
 
                 for x in notify_list:
-                    # recipient = EventsNotificationRecipients.query.filter_by(notification_id=x).first()
-                    # recipients = db.session.query(EventsNotificationRecipients) \
-                    #                     .filter_by(notification_id=x) \
-                    #                     .join(EventsNotificationData) \
-                    #                     .filter_by(deleted=0) \
-                    #                     .all()
                     recipients = db.session.query(EventsNotificationRecipients) \
                                           .filter_by(notification_id=x).all()
 
                     for recipient in recipients:
                         print(recipient.recipient_email.lower())
+
+                        # determine if the on_update should be sent
+                        if change_type == 'on_update':
+                            if recipient.notify_data[0].notify_updated == 1:
+                                on_update = True
+                                print('on_update ALWAYS')
+                            elif recipient.notify_data[0].notify_updated == 2:
+                                print('on_update FILTERED')
+                            else:
+                                # Already initialised false above, so just print debug details
+                                if recipient.notify_data[0].notify_updated == 0:
+                                    print('on_update NEVER ignore')
+                                # Handle this in a external process, don't sent it NOW
+                                if recipient.notify_data[0].notify_updated == 3:
+                                    print('on_update PERIODIC ignore')
+
 
                         # Gather generic data from the db for both cases...
                         # Fetch the Impact data
