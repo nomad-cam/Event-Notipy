@@ -14,6 +14,7 @@ from string import Template
 import pprint
 import requests
 import time
+from datetime import datetime, timedelta
 
 app.register_blueprint(api_route, url_prefix='/api/v1')
 
@@ -195,8 +196,6 @@ def on_change(change_type, event_id):
                 if change_type == 'on_create':
                     on_create = True
 
-
-
                 sent_email_list = []
                 sent_sms_list = []
 
@@ -214,6 +213,13 @@ def on_change(change_type, event_id):
                                 print('on_update ALWAYS')
                             elif recipient.notify_data[0].notify_updated == 2:
                                 print('on_update FILTERED')
+                                update_date = events_data.created_date
+                                date_now = datetime.now()
+                                time_diff = date_now - update_date
+                                if time_diff > timedelta(minutes=15):
+                                    print('created MORE than 15 minutes ago, will NOW send a message')
+                                else:
+                                    print('created LESS than 15 minutes ago, will NOT send a message')
                             else:
                                 # Already initialised false above, so just print debug details
                                 if recipient.notify_data[0].notify_updated == 0:

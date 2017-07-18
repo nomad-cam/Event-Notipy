@@ -102,6 +102,7 @@ class EventsData(db.Model):
     reported_by = db.Column(db.Integer)
     start_date = db.Column(db.DateTime)
     end_date = db.Column(db.DateTime)
+    created_date = db.Column(db.DateTime)
     optime = db.Column(db.Integer)
     group_id = db.Column(TINYINT(3), db.ForeignKey('elog_group_data.group_id'))  # to be deleted
     impact = db.Column(TINYINT(3), db.ForeignKey('events_impact_data.impact_id'))
