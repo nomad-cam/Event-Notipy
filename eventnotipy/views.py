@@ -8,6 +8,7 @@ from eventnotipy.models import EventsNotificationConditions, EventsNotificationD
                                EventsData, EventsImpactData, EventsStatusData, EventsSystemData, \
                                EventsBeamModeData, EventsGroups, EventsContributors, \
                                EventsSubSystemData, EventsOncallData, EventsOncallNames, \
+                               EventsChanges, \
                                ElogGroupData, ElogBeamModeData, \
                                Templates, SolUsers
 from string import Template
@@ -208,18 +209,36 @@ def on_change(change_type, event_id):
 
                         # determine if the on_update should be sent
                         if change_type == 'on_update':
+                            # fetch the changes table
+                            update_data = (EventsChanges.query.filter_by(event_id=events_data.event_id)
+                                           .filter_by(comments='update entry')
+                                           .order_by(EventsChanges.id.desc())
+                                           .limit(2).all()
+                                           )
+
                             if recipient.notify_data[0].notify_updated == 1:
                                 on_update = True
                                 print('on_update ALWAYS')
                             elif recipient.notify_data[0].notify_updated == 2:
                                 print('on_update FILTERED')
-                                update_date = events_data.created_date
-                                date_now = datetime.now()
-                                time_diff = date_now - update_date
-                                if time_diff > timedelta(minutes=15):
-                                    print('created MORE than 15 minutes ago, will NOW send a message')
+
+                                # Determine filter state based on length difference of previous and current
+                                previous = str(update_data[1].description).split(' ')
+                                current = str(update_data[0].description).split(' ')
+                                diff = abs(len(current) - len(previous))
+
+                                # If more than 10 words different, then it's probably got some seriousness about it...
+                                if diff > 10:
+                                    on_update = True
+                                    print('Major edit detected [%s :%s :%s ]' % (len(current), len(previous), diff))
                                 else:
-                                    print('created LESS than 15 minutes ago, will NOT send a message')
+                                    print('Meh, minor change ignored [%s :%s :%s ]' % (len(current), len(previous), diff))
+                                # date_now = datetime.now()
+                                # time_diff = date_now - update_date
+                                # if time_diff > timedelta(minutes=15):
+                                #     print('created MORE than 15 minutes ago, will NOW send a message')
+                                # else:
+                                #     print('created LESS than 15 minutes ago, will NOT send a message')
                             else:
                                 # Already initialised false above, so just print debug details
                                 if recipient.notify_data[0].notify_updated == 0:
