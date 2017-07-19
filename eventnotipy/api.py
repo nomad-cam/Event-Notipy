@@ -131,6 +131,60 @@ def api_display_user(username):
 
 
 #
+# Enable/Disable a notification based on id
+# <value> - notification_id
+#
+# <action> - enable
+#            disable
+#            delete
+#            show
+#
+@api_route.route('/notifications/<int:value>/<action>', methods=['GET', 'PUT'])
+def api_enable_id(action, value):
+    if request.method == 'PUT':
+        # response 200
+        return jsonify(action=action, value=value)
+
+    if request.method == 'GET':
+        notifications = EventsNotificationData.query \
+            .filter_by(notify_id=value) \
+            .filter_by(deleted=0).first()
+
+        mode_string = ''
+        if notifications.notify_mode == 1:
+            mode_string = 'email only'
+        if notifications.notify_mode == 2:
+            mode_string = 'sms only'
+        if notifications.notify_mode == 3:
+            mode_string = 'both email and sms'
+
+        if notifications.notify_submitted:
+            on_submit_string = 'True'
+        else:
+            on_submit_string = 'False'
+
+        if notifications.notify_updated:
+            on_update_string = 'True'
+        else:
+            on_update_string = 'False'
+
+        obj = {
+            'id': notifications.notify_id,
+            'title': notifications.notify_title,
+            'active': notifications.notify_active,
+            'date_created': notifications.notify_date_added,
+            'date_modified': notifications.notify_date_modified,
+            'mode': mode_string,
+            'on_update': on_update_string,
+            'on_submit': on_submit_string,
+        }
+
+        response = jsonify(obj)
+        response.status_code = 200
+        return response
+
+
+#
 # Create a notification that is triggered on condition/operator/value
 # <user_id> - as specified from ldap username string
 #
