@@ -150,34 +150,38 @@ def api_enable_id(action, value):
             .filter_by(notify_id=value) \
             .filter_by(deleted=0).first()
 
-        mode_string = ''
-        if notifications.notify_mode == 1:
-            mode_string = 'email only'
-        if notifications.notify_mode == 2:
-            mode_string = 'sms only'
-        if notifications.notify_mode == 3:
-            mode_string = 'both email and sms'
+        if notifications:
+            # Only respond if the data is not deleted
+            mode_string = ''
+            if notifications.notify_mode == 1:
+                mode_string = 'email only'
+            if notifications.notify_mode == 2:
+                mode_string = 'sms only'
+            if notifications.notify_mode == 3:
+                mode_string = 'both email and sms'
 
-        if notifications.notify_submitted:
-            on_submit_string = 'True'
+            if notifications.notify_submitted:
+                on_submit_string = 'True'
+            else:
+                on_submit_string = 'False'
+
+            if notifications.notify_updated:
+                on_update_string = 'True'
+            else:
+                on_update_string = 'False'
+
+            obj = {
+                'id': notifications.notify_id,
+                'title': notifications.notify_title,
+                'active': notifications.notify_active,
+                'date_created': notifications.notify_date_added,
+                'date_modified': notifications.notify_date_modified,
+                'mode': mode_string,
+                'on_update': on_update_string,
+                'on_submit': on_submit_string,
+            }
         else:
-            on_submit_string = 'False'
-
-        if notifications.notify_updated:
-            on_update_string = 'True'
-        else:
-            on_update_string = 'False'
-
-        obj = {
-            'id': notifications.notify_id,
-            'title': notifications.notify_title,
-            'active': notifications.notify_active,
-            'date_created': notifications.notify_date_added,
-            'date_modified': notifications.notify_date_modified,
-            'mode': mode_string,
-            'on_update': on_update_string,
-            'on_submit': on_submit_string,
-        }
+            obj = {'error': 'Notification has been deleted'}
 
         response = jsonify(obj)
         response.status_code = 200
