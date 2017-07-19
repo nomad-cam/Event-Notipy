@@ -211,7 +211,7 @@ def on_change(change_type, event_id):
                         if change_type == 'on_update':
                             # fetch the changes table
                             update_data = (EventsChanges.query.filter_by(event_id=events_data.event_id)
-                                           .filter_by(comments='update entry')
+                                           # .filter_by(comments='update entry')
                                            .order_by(EventsChanges.id.desc())
                                            .limit(2).all()
                                            )
@@ -222,13 +222,20 @@ def on_change(change_type, event_id):
                             elif recipient.notify_data[0].notify_updated == 2:
                                 print('on_update FILTERED')
 
-                                # Determine filter state based on length difference of previous and current
-                                previous = str(update_data[1].description).split(' ')
-                                current = str(update_data[0].description).split(' ')
-                                diff = abs(len(current) - len(previous))
+                                if len(update_data) > 1:
+                                    # Determine filter state based on length difference of previous and current updates
+                                    previous = str(update_data[1].description).split(' ')
+                                    current = str(update_data[0].description).split(' ')
+                                    diff = abs(len(current) - len(previous))
+                                else:
+                                    # Only 1 update, not enough information to filter...
+                                    print('Not enough data to determine on_update!')
+                                    previous = []
+                                    current = []
+                                    diff = 0
 
                                 # If more than 10 words different, then it's probably got some seriousness about it...
-                                if diff >= 5:
+                                if diff >= 10:
                                     on_update = True
                                     print('Major edit detected [%s :%s :%s ]' % (len(current), len(previous), diff))
                                 else:
@@ -257,7 +264,6 @@ def on_change(change_type, event_id):
                         # check if the recipient requires an email to be sent
                         if (recipient.notify_data[0].notify_mode == 1) or (recipient.notify_data[0].notify_mode == 3):
                             # check which notifications are required on_update or on_create
-                            print('on_create=%s on_update=%s' % (on_create, on_update))
                             if on_create or on_update:
                                 if recipient.recipient_email:
                                     if recipient.recipient_name not in sent_email_list:
@@ -330,7 +336,7 @@ def on_change(change_type, event_id):
                                 else:
                                     print('No email address provided. Unable to send message.')
                             else:
-                                print('Email %s not sent because [notify_submitted] == 0 OR [notify_updated] == 0' % change_type)
+                                print('Email %s not sent because [notify_submitted] == %s OR [notify_updated] == %s' % (change_type, on_create, on_update))
 
                         # check if the recipient requires an SMS to be sent
                         if (recipient.notify_data[0].notify_mode == 2) or (recipient.notify_data[0].notify_mode == 3):
@@ -359,7 +365,7 @@ def on_change(change_type, event_id):
                                 else:
                                     print('No phone number provided. Unable to send SMS.')
                             else:
-                                print('SMS %s not sent because [notify_submitted] == 0 OR [notify_updated] == 0' % change_type)
+                                print('SMS %s not sent because [notify_submitted] == %s OR [notify_updated] == %s' % (change_type, on_create, on_update))
 
             date = time.strftime('%Y-%m-%d %H:%M:%S')
             print('Notifications Completed: %s' % date)
