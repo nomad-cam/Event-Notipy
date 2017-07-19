@@ -39,6 +39,23 @@ def api_display_current():
         results = []
 
         for result in notifications:
+            recipients = EventsNotificationRecipients.query.filter_by(notification_id=result.notify_id).all()
+            recipient_string = ''
+            if recipients:
+                for person in recipients:
+                    recipient_string += person.recipient_name + ', '
+            condition_str = ''
+            conditions = EventsNotificationRules.query.filter_by(notification_id=result.notify_id).all()
+            if conditions:
+                for condition in conditions:
+                    condition_str += condition.conditions[0].condition_name
+                    if condition.rule_operator == 'EQ':
+                        condition_str += ' = '
+                    else:
+                        condition_str += ' != '
+                    condition_str += condition.rule_value + ', '
+
+
             mode_string = ''
             if result.notify_mode == 1:
                 mode_string = 'email only'
@@ -64,6 +81,8 @@ def api_display_current():
                 'date_created': result.notify_date_added,
                 'date_modified': result.notify_date_modified,
                 'mode': mode_string,
+                'recipients': recipient_string[:-2],
+                'conditions': condition_str[:-2],
                 'on_update': on_update_string,
                 'on_submit': on_submit_string,
             }
@@ -98,6 +117,17 @@ def api_display_user(username):
                 .filter_by(deleted=0).all()
 
             for result in notifications:
+                condition_str = ''
+                conditions = EventsNotificationRules.query.filter_by(notification_id=result.notify_id).all()
+                if conditions:
+                    for condition in conditions:
+                        condition_str += condition.conditions[0].condition_name
+                        if condition.rule_operator == 'EQ':
+                            condition_str += ' = '
+                        else:
+                            condition_str += ' != '
+                        condition_str += condition.rule_value + ', '
+
                 mode_string = ''
                 if result.notify_mode == 1:
                     mode_string = 'email only'
@@ -123,6 +153,7 @@ def api_display_user(username):
                     'date_created': result.notify_date_added,
                     'date_modified': result.notify_date_modified,
                     'mode': mode_string,
+                    'conditions': condition_str[:-2],
                     'on_update': on_update_string,
                     'on_submit': on_submit_string,
                 }

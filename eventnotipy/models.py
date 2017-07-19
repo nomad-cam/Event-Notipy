@@ -25,6 +25,12 @@ class EventsNotificationRecipients(db.Model):
         return '[notification_id] %r, [recipient_name] %r, [recipient_email] %r, [recipient_phone] %r' % \
                (self.notification_id,self.recipient_name,self.recipient_email,self.recipient_phone)
 
+    def get_all_by_name(this,name):
+        return EventsNotificationRecipients.query.filter_by(recipient_name=name).all()
+
+    def get_all_by_id(this,id):
+        return EventsNotificationRecipients.query.filter_by(notification_id=id).all()
+
 
 class EventsNotificationData(db.Model):
     __tablename__ = 'events_notification_data'
@@ -66,12 +72,13 @@ class EventsNotificationRules(db.Model):
 
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     notification_id = db.Column(TINYINT(11), primary_key=True)
-    rule_condition = db.Column(db.Integer, db.ForeignKey('events_notification_conditions_data.condition_id'), primary_key=True)
+    # rule_condition = db.Column(db.Integer, db.ForeignKey('events_notification_conditions_data.condition_id'), primary_key=True)
+    rule_condition = db.Column(db.Integer, primary_key=True)
     rule_operator = db.Column(db.Text)
     rule_value = db.Column(db.Text)
 
     notify_data = db.relationship('EventsNotificationData')
-    # conditions = db.relationship('EventsNotificationConditions')
+    conditions = db.relationship('EventsNotificationConditions')
 
     def __repr__(self):
         return '[notification_id] %r, [rule_condition] %r, [rule_operator] %r, [rule_value] %r, [notify_data] %r' \
@@ -81,11 +88,11 @@ class EventsNotificationRules(db.Model):
 class EventsNotificationConditions(db.Model):
     __tablename__ = 'events_notification_conditions_data'
 
-    condition_id = db.Column(db.Integer, primary_key=True)
+    condition_id = db.Column(db.Integer, db.ForeignKey('events_notification_rules.rule_condition'), primary_key=True)
     condition_name = db.Column(db.Text)
     condition_operators = db.Column(db.Text)
 
-    rules = db.relationship(EventsNotificationRules)
+    # rules = db.relationship(EventsNotificationRules)
 
 
 class EventsContributors(db.Model):
