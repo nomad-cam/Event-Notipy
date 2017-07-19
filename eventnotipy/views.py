@@ -194,9 +194,6 @@ def on_change(change_type, event_id):
                 on_create = False
                 on_update = False
 
-                if change_type == 'on_create':
-                    on_create = True
-
                 sent_email_list = []
                 sent_sms_list = []
 
@@ -206,6 +203,9 @@ def on_change(change_type, event_id):
 
                     for recipient in recipients:
                         print(recipient.recipient_email.lower())
+                        # determine if the on_update should be sent
+                        if (change_type == 'on_create' and (recipient.notify_data[0].notify_submitted == 1)):
+                            on_create = True
 
                         # determine if the on_update should be sent
                         if change_type == 'on_update':
@@ -228,11 +228,12 @@ def on_change(change_type, event_id):
                                 diff = abs(len(current) - len(previous))
 
                                 # If more than 10 words different, then it's probably got some seriousness about it...
-                                if diff > 10:
+                                if diff >= 5:
                                     on_update = True
                                     print('Major edit detected [%s :%s :%s ]' % (len(current), len(previous), diff))
                                 else:
                                     print('Meh, minor change ignored [%s :%s :%s ]' % (len(current), len(previous), diff))
+                                # Optional time based filtering if the length method doesn't prove to be reliable
                                 # date_now = datetime.now()
                                 # time_diff = date_now - update_date
                                 # if time_diff > timedelta(minutes=15):
@@ -247,7 +248,6 @@ def on_change(change_type, event_id):
                                 if recipient.notify_data[0].notify_updated == 3:
                                     print('on_update PERIODIC ignore')
 
-
                         # Gather generic data from the db for both cases...
                         # Fetch the Impact data
                         impact = EventsImpactData.query.filter_by(impact_id=events_data.impact).first()
@@ -257,9 +257,8 @@ def on_change(change_type, event_id):
                         # check if the recipient requires an email to be sent
                         if (recipient.notify_data[0].notify_mode == 1) or (recipient.notify_data[0].notify_mode == 3):
                             # check which notifications are required on_update or on_create
-
-                            if ((on_create) and (recipient.notify_data[0].notify_submitted == 1)) \
-                                    or ((on_update) and (recipient.notify_data[0].notify_updated == 1)):
+                            print('on_create=%s on_update=%s' % (on_create, on_update))
+                            if on_create or on_update:
                                 if recipient.recipient_email:
                                     if recipient.recipient_name not in sent_email_list:
                                         print('Sent emails: %s' % sent_email_list)
@@ -337,7 +336,7 @@ def on_change(change_type, event_id):
                         if (recipient.notify_data[0].notify_mode == 2) or (recipient.notify_data[0].notify_mode == 3):
                             # check which notifications are required on_update or on_create
 
-                            if ((on_create) and (recipient.notify_data[0].notify_submitted == 1)) or ((on_update) and (recipient.notify_data[0].notify_updated == 1)):
+                            if on_create or on_update:
                                 if recipient.recipient_phone:
                                     if recipient.recipient_name not in sent_sms_list:
                                         print('Sent SMS %s' % sent_sms_list)
