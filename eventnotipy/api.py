@@ -142,8 +142,12 @@ def api_display_user(username):
 @api_route.route('/notifications/<int:value>/<action>', methods=['GET', 'PUT'])
 def api_enable_id(action, value):
     if request.method == 'PUT':
-        # response 200
-        return jsonify(action=action, value=value)
+        actions = ['enable','disable','delete','show']
+        if action in actions:
+            # response 200
+            return jsonify(action=action, value=value)
+        else:
+            abort(404)
 
     if request.method == 'GET':
         if action == 'show':
