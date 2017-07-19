@@ -78,7 +78,13 @@ def api_display_current():
 def api_display_user(username):
     if request.method == 'GET':
         user_id = db.session.query(SolUsers.id, SolUsers.name).filter_by(username=username).first()
-        recipients_events = db.session.query(EventsNotificationRecipients.notification_id)\
+
+        if not user_id:
+            response = jsonify({'error': 'username not found'})
+            response.status_code = 200
+            return response
+
+        recipients_events = db.session.query(EventsNotificationRecipients.notification_id) \
             .filter_by(recipient_name=user_id.name).all()
 
         results = []
