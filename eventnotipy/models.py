@@ -190,6 +190,38 @@ class EventsOncallNames(db.Model):
     oncall_phone = db.Column(db.Text)
 
 
+class EventsChanges(db.Model):
+    __tablename__ = 'events_changes'
+
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    event_id = db.Column(db.Integer, primary_key=True)
+    log_time = db.Column(db.DateTime)
+    user_id = db.Column(db.Integer)
+    ip = db.Column(db.String(63))
+    comments = db.Column(db.Text)
+    reported_by = db.Column(db.Integer)
+    start_date = db.Column(db.DateTime)
+    end_date = db.Column(db.DateTime)
+    optime = db.Column(db.Integer)
+    group_id = db.Column(TINYINT(3), db.ForeignKey('elog_group_data.group_id'))  # to be deleted
+    impact = db.Column(TINYINT(3), db.ForeignKey('events_impact_data.impact_id'))
+    system = db.Column(db.Integer, db.ForeignKey('events_system_data.system_id'))
+    sub_system = db.Column(db.Text)
+    device = db.Column(db.Text)
+    title = db.Column(db.Text)
+    contributors = db.Column(db.Text)  # to be deleted...
+    description = db.Column(db.Text)
+    resolution = db.Column(db.Text)
+    actions = db.Column(db.Text)
+    status = db.Column(TINYINT(3), db.ForeignKey('events_status_data.status_id'))
+    linked_content = db.Column(TINYINT(3))
+    on_call = db.Column(db.Text)
+    beam_mode = db.Column(TINYINT(3))
+    elog = db.Column(db.Integer)
+    notification = db.Column(db.Integer)
+
+
+
 class ElogGroupData(db.Model):
     __tablename__ = 'elog_group_data'
 
