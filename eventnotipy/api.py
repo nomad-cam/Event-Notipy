@@ -16,6 +16,9 @@ api_route = Blueprint('api_route',__name__)
 # <username> - as specified from ldap username string
 #
 # <event_id> - the JOE id
+#
+# **** Possible Future Enhancement ****
+#
 @api_route.route('/notifications/<username>/<int:event_id>/', methods=['POST, DELETE'])
 def api_add_event(event_id, username):
     if request.method == 'POST':
@@ -132,66 +135,82 @@ def api_display_user(username):
 
 #
 # Enable/Disable a notification based on id
-# <value> - notification_id
+# <note_id> - notification_id
 #
 # <action> - enable
 #            disable
 #            delete
 #            show
 #
-@api_route.route('/notifications/<int:value>/<action>', methods=['GET', 'PUT'])
-def api_enable_id(action, value):
+@api_route.route('/notifications/<int:note_id>/<action>', methods=['GET', 'PUT', 'DELETE'])
+def api_enable_id(note_id, action):
+    # Process data for all methods
+    notification = EventsNotificationData.query \
+        .filter_by(notify_id=note_id) \
+        .filter_by(deleted=0).first()
+
+    if notification:
+        # Only respond if the data is not deleted
+        mode_string = ''
+        if notification.notify_mode == 1:
+            mode_string = 'email only'
+        if notification.notify_mode == 2:
+            mode_string = 'sms only'
+        if notification.notify_mode == 3:
+            mode_string = 'both email and sms'
+
+        if notification.notify_submitted:
+            on_submit_string = 'True'
+        else:
+            on_submit_string = 'False'
+
+        if notification.notify_updated:
+            on_update_string = 'True'
+        else:
+            on_update_string = 'False'
+
+        obj = {
+            'id': notification.notify_id,
+            'title': notification.notify_title,
+            'active': notification.notify_active,
+            'date_created': notification.notify_date_added,
+            'date_modified': notification.notify_date_modified,
+            'mode': mode_string,
+            'on_update': on_update_string,
+            'on_submit': on_submit_string,
+        }
+    else:
+        # return before any access method if notification not available
+        return jsonify(error='Notification has been deleted')
+
     if request.method == 'PUT':
-        actions = ['enable','disable','delete','show']
+        actions = ['enable', 'disable']
         if action in actions:
-            # response 200
-            return jsonify(action=action, value=value)
+            if action == 'enable':
+                notification.notify_active = 1
+                db.session.commit()
+                return jsonify(result='Success')
+            if action == 'disable':
+                notification.notify_active = 0
+                db.session.commit()
+                return jsonify(result='Success')
+        else:
+            abort(404)
+
+    if request.method == 'DELETE':
+        if action == 'delete':
+            notification.deleted = 1
+            notification.notify_active = 0
+            db.session.commit()
+            return jsonify(result='Success')
         else:
             abort(404)
 
     if request.method == 'GET':
         if action == 'show':
-            notifications = EventsNotificationData.query \
-                .filter_by(notify_id=value) \
-                .filter_by(deleted=0).first()
-
-            if notifications:
-                # Only respond if the data is not deleted
-                mode_string = ''
-                if notifications.notify_mode == 1:
-                    mode_string = 'email only'
-                if notifications.notify_mode == 2:
-                    mode_string = 'sms only'
-                if notifications.notify_mode == 3:
-                    mode_string = 'both email and sms'
-
-                if notifications.notify_submitted:
-                    on_submit_string = 'True'
-                else:
-                    on_submit_string = 'False'
-
-                if notifications.notify_updated:
-                    on_update_string = 'True'
-                else:
-                    on_update_string = 'False'
-
-                obj = {
-                    'id': notifications.notify_id,
-                    'title': notifications.notify_title,
-                    'active': notifications.notify_active,
-                    'date_created': notifications.notify_date_added,
-                    'date_modified': notifications.notify_date_modified,
-                    'mode': mode_string,
-                    'on_update': on_update_string,
-                    'on_submit': on_submit_string,
-                }
-            else:
-                obj = {'error': 'Notification has been deleted'}
-
             response = jsonify(obj)
             response.status_code = 200
             return response
-
         else:
             abort(404)
 
@@ -215,4 +234,4 @@ def api_enable_id(action, value):
 def api_add_condition(user_id, condition, operator, value):
     if request.method == 'POST':
         # response 200
-        return jsonify(user_id=user_id, condition=condition, operator=operator, value=value)
+        return jsonify(method='POST',user_id=user_id, condition=condition, operator=operator, value=value)
