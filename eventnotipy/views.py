@@ -17,7 +17,7 @@ import requests
 import time
 from datetime import datetime, timedelta
 
-app.register_blueprint(api_route, url_prefix='/api/v1')
+app.register_blueprint(api_route, url_prefix='/joe/v1.0')
 
 pp = pprint.PrettyPrinter(indent=4)
 
